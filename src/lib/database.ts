@@ -4,8 +4,10 @@ import { getEnv } from './env';
 
 export interface Database {
 	readSubscriberByEmail(email: string): Promise<Subscriber | null>;
+	readSubscriberByTokenHash(tokenHash: string): Promise<Subscriber | null>;
 	createPendingSubscriber(input: PendingSubscriberInput): Promise<void>;
 	updatePendingSubscriber(input: PendingSubscriberInput): Promise<void>;
+	updateActive(tokenHash: string): Promise<void>;
 	updateLastEmailSentAt(email: string, sentAt: Date): Promise<void>;
 }
 
@@ -69,6 +71,16 @@ class NeonDatabase implements Database {
 		return rows[0] ? Subscriber.from(rows[0]) : null;
 	}
 
+	async readSubscriberByTokenHash(tokenHash: string) {
+		const rows = await this.sql`
+			SELECT *
+			FROM subscribers
+			WHERE token_hash = ${tokenHash}
+			LIMIT 1
+		`;
+		return rows[0] ? Subscriber.from(rows[0]) : null;
+	}
+
 	async createPendingSubscriber({ email, token, tokenHash, tokenCreatedAt }: PendingSubscriberInput) {
 		await this.sql`
 			INSERT INTO subscribers (email, active, token, token_hash, token_created_at)
@@ -83,6 +95,14 @@ class NeonDatabase implements Database {
 				token_hash = ${tokenHash},
 				token_created_at = ${tokenCreatedAt}
 			WHERE email = ${email}
+		`;
+	}
+
+	async updateActive(tokenHash: string) {
+		await this.sql`
+			UPDATE subscribers
+			SET active = true
+			WHERE token_hash = ${tokenHash}
 		`;
 	}
 
@@ -101,12 +121,21 @@ class FakeDatabase implements Database {
 		return null;
 	}
 
+	async readSubscriberByTokenHash(tokenHash: string) {
+		console.log('FakeDatabase.readSubscriberByTokenHash', { tokenHash });
+		return null;
+	}
+
 	async createPendingSubscriber(input: PendingSubscriberInput) {
 		console.log('FakeDatabase.createPendingSubscriber', input);
 	}
 
 	async updatePendingSubscriber(input: PendingSubscriberInput) {
 		console.log('FakeDatabase.updatePendingSubscriber', input);
+	}
+
+	async updateActive(tokenHash: string) {
+		console.log('FakeDatabase.updateActive', { tokenHash });
 	}
 
 	async updateLastEmailSentAt(email: string, sentAt: Date) {

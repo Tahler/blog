@@ -43,8 +43,21 @@ export class SubscriberService {
     }
     const confirmationUrl = new URL('/subscribe', origin);
     confirmationUrl.searchParams.set('t', token);
-    await this.emailer.sendConfirmation(normalizedEmail, confirmationUrl.toString());
-    await this.database.updateLastEmailSentAt(normalizedEmail, now);
+		await this.emailer.sendConfirmation(normalizedEmail, confirmationUrl.toString());
+		await this.database.updateLastEmailSentAt(normalizedEmail, now);
+	}
+
+	async confirmSubscriber(token: string): Promise<boolean> {
+		if (!token) {
+			return false;
+		}
+		const tokenHash = hash(token);
+		const subscriber = await this.database.readSubscriberByTokenHash(tokenHash);
+		if (!subscriber || !subscriber.token || !subscriber.tokenHash) {
+			return false;
+		}
+		await this.database.updateActive(tokenHash);
+		return true;
 	}
 }
 
