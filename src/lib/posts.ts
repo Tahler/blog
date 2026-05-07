@@ -1,5 +1,4 @@
-import { getCollection } from "astro:content";
-import type { CollectionEntry } from "astro:content";
+import { getCollection, getEntry, type CollectionEntry } from "astro:content";
 
 type BlogEntry = CollectionEntry<"blog">;
 
@@ -9,9 +8,8 @@ export type Post = BlogEntry & {
 };
 
 export async function getSortedPosts(): Promise<Post[]> {
-  const posts = await getCollection("blog");
-
-  return posts
+  const entries = await getCollection("blog");
+  return entries
     .slice()
     .sort(
       (a, b) =>
@@ -20,12 +18,15 @@ export async function getSortedPosts(): Promise<Post[]> {
     .map(toPost);
 }
 
-function toPost(post: BlogEntry): Post {
-  const match = post.id.match(/^\d{4}-\d{2}-\d{2}_(.+)$/);
-  const slug = match ? match[1] : post.id;
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const entry = await getEntry("blog", slug);
+  return entry ? toPost(entry) : null;
+}
 
+function toPost(entry: BlogEntry): Post {
+  const slug = entry.id;
   return {
-    ...post,
+    ...entry,
     slug,
     url: `/blog/${slug}/`,
   };
