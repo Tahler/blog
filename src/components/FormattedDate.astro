@@ -1,6 +1,6 @@
 ---
 interface Props {
-	date: `${number}-${number}-${number}`;
+  date: `${number}-${number}-${number}`;
 }
 
 const { date } = Astro.props;
@@ -8,11 +8,11 @@ const value = new Date(date);
 ---
 
 <time datetime={value.toISOString()}>
-	{
-		value.toLocaleDateString('en-us', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-		})
-	}
+  {
+    value.toLocaleDateString("en-us", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+  }
 </time>

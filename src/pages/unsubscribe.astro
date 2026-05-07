@@ -1,86 +1,92 @@
 ---
 export const prerender = false;
 
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_TITLE } from '../consts';
-import { InvalidTokenError, subscriberService } from '../lib/subscriber-service';
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import { SITE_TITLE } from "../consts";
+import {
+  InvalidTokenError,
+  subscriberService,
+} from "../lib/subscriber-service";
 
-const token = Astro.url.searchParams.get('t') ?? '';
+const token = Astro.url.searchParams.get("t") ?? "";
 if (!token) {
-	return Astro.redirect('/');
+  return Astro.redirect("/");
 }
 
-let title = 'Unsubscribe';
-let message = 'Confirm that you want to unsubscribe from future emails.';
+let title = "Unsubscribe";
+let message = "Confirm that you want to unsubscribe from future emails.";
 let unsubscribed = false;
 
-if (Astro.request.method === 'POST') {
-	try {
-		await subscriberService.unsubscribe(token);
-		title = 'You have been unsubscribed';
-		message = 'Your subscriber account has been deleted and you will not receive future emails.';
-		unsubscribed = true;
-	} catch (error) {
-		if (error instanceof InvalidTokenError) {
-			title = 'Invalid link';
-			message = 'The unsubscribe link is invalid.';
-		} else {
-			console.error(error);
-			title = 'Error';
-			message = 'Something went wrong.';
-		}
-	}
-} else if (Astro.request.method !== 'GET') {
-	return Astro.redirect('/');
+if (Astro.request.method === "POST") {
+  try {
+    await subscriberService.unsubscribe(token);
+    title = "You have been unsubscribed";
+    message =
+      "Your subscriber account has been deleted and you will not receive future emails.";
+    unsubscribed = true;
+  } catch (error) {
+    if (error instanceof InvalidTokenError) {
+      title = "Invalid link";
+      message = "The unsubscribe link is invalid.";
+    } else {
+      console.error(error);
+      title = "Error";
+      message = "Something went wrong.";
+    }
+  }
+} else if (Astro.request.method !== "GET") {
+  return Astro.redirect("/");
 }
 
 let subscriber = null;
 if (!unsubscribed) {
-	try {
-		subscriber = await subscriberService.readSubscriberByToken(token);
-	} catch (error) {
-		if (error instanceof InvalidTokenError) {
-			title = 'Invalid link';
-			message = 'The unsubscribe link is invalid.';
-		} else {
-			throw error;
-		}
-	}
+  try {
+    subscriber = await subscriberService.readSubscriberByToken(token);
+  } catch (error) {
+    if (error instanceof InvalidTokenError) {
+      title = "Invalid link";
+      message = "The unsubscribe link is invalid.";
+    } else {
+      throw error;
+    }
+  }
 }
 
-const email = subscriber?.email ?? '';
+const email = subscriber?.email ?? "";
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={`${title} | ${SITE_TITLE}`} description={message} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>{title}</h1>
-			<p>{message}</p>
-			{
-				subscriber ? (
-					<form method="post">
-						<p>
-							<label>
-								Email
-								<input type="email" value={email} disabled />
-							</label>
-						</p>
-						<p>
-							<button type="submit">Confirm unsubscribe</button>
-						</p>
-					</form>
-				) : (
-					<p><a href="/">Back home</a></p>
-				)
-			}
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <BaseHead title={`${title} | ${SITE_TITLE}`} description={message} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>{title}</h1>
+      <p>{message}</p>
+      {
+        subscriber ? (
+          <form method="post">
+            <p>
+              <label>
+                Email
+                <input type="email" value={email} disabled />
+              </label>
+            </p>
+            <p>
+              <button type="submit">Confirm unsubscribe</button>
+            </p>
+          </form>
+        ) : (
+          <p>
+            <a href="/">Back home</a>
+          </p>
+        )
+      }
+    </main>
+    <Footer />
+  </body>
 </html>

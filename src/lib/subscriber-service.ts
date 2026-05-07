@@ -1,31 +1,39 @@
-import { randomBytes } from 'node:crypto';
+import { randomBytes } from "node:crypto";
 
-import { Subscriber, database } from './database';
-import { emailer } from './email';
+import { database, type Database, type Subscriber } from "./database";
+import { emailer, type Emailer } from "./email";
 
 export class SubscriberService {
-	constructor(
-		private readonly database: typeof database,
-		private readonly emailer: typeof emailer,
-	) {}
+  constructor(
+    private readonly database: Database,
+    private readonly emailer: Emailer,
+  ) {}
 
-	async createPendingSubscriber(email: string, origin: URL) {
-		const normalizedEmail = email.trim().toLowerCase();
-		if (!normalizedEmail) {
-			throw new InvalidEmailError();
-		}
+  async createPendingSubscriber(email: string, origin: URL) {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      throw new InvalidEmailError();
+    }
 
-		const now = new Date();
-		const existing = await this.database.readSubscriberByEmail(normalizedEmail);
+    const now = new Date();
+    const existing = await this.database.readSubscriberByEmail(normalizedEmail);
     if (existing) {
       if (existing.active) {
         // Don't resend confirmations to active subscribers.
-        console.log('Refusing to send confirmation to existing active subscriber', existing.email);
+        console.log(
+          "Refusing to send confirmation to existing active subscriber",
+          existing.email,
+        );
         return;
       }
       if (!existing.canSendEmail(now)) {
         // Don't spam pending subscribers.
-        console.log('Refusing to spam', existing.email, 'who last received email at', existing.lastEmailSentAt)
+        console.log(
+          "Refusing to spam",
+          existing.email,
+          "who last received email at",
+          existing.lastEmailSentAt,
+        );
         return;
       }
     }
@@ -40,49 +48,53 @@ export class SubscriberService {
     } else {
       await this.database.createPendingSubscriber(input);
     }
-    const confirmationUrl = new URL('/subscribe', origin);
-    confirmationUrl.searchParams.set('t', token);
-		await this.emailer.sendConfirmation(normalizedEmail, confirmationUrl.toString());
-		await this.database.updateLastEmailSentAt(normalizedEmail, now);
-	}
+    const confirmationUrl = new URL("/subscribe", origin);
+    confirmationUrl.searchParams.set("t", token);
+    await this.emailer.sendConfirmation(
+      normalizedEmail,
+      confirmationUrl.toString(),
+    );
+    await this.database.updateLastEmailSentAt(normalizedEmail, now);
+  }
 
-	async confirm(token: string): Promise<void> {
-		await this.readSubscriberByToken(token);
-		await this.database.updateActive(token);
-	}
+  async confirm(token: string): Promise<void> {
+    await this.readSubscriberByToken(token);
+    await this.database.updateActive(token);
+  }
 
-	async readSubscriberByToken(token: string): Promise<Subscriber> {
-		if (!token) {
-			throw new InvalidTokenError();
-		}
+  async readSubscriberByToken(token: string): Promise<Subscriber> {
+    if (!token) {
+      throw new InvalidTokenError();
+    }
+    const subscriber = await this.database.readSubscriberByToken(token);
+    if (!subscriber) {
+      throw new InvalidTokenError();
+    }
+    return subscriber;
+  }
 
-		const subscriber = await this.database.readSubscriberByToken(token);
-		if (!subscriber) {
-			throw new InvalidTokenError();
-		}
+  async updatePreferences(
+    token: string,
+    input: { name: string; wantsProjects: boolean; wantsThoughts: boolean },
+  ): Promise<void> {
+    await this.readSubscriberByToken(token);
+    const name = input.name.trim();
+    await this.database.updatePreferences({
+      token,
+      name: name || null,
+      wantsProjects: input.wantsProjects,
+      wantsThoughts: input.wantsThoughts,
+    });
+  }
 
-		return subscriber;
-	}
-
-	async updatePreferences(token: string, input: { name: string; wantsProjects: boolean; wantsThoughts: boolean }): Promise<void> {
-		await this.readSubscriberByToken(token);
-		const name = input.name.trim();
-		await this.database.updatePreferences({
-			token,
-			name: name || null,
-			wantsProjects: input.wantsProjects,
-			wantsThoughts: input.wantsThoughts,
-		});
-	}
-
-	async unsubscribe(token: string): Promise<void> {
-		await this.readSubscriberByToken(token);
-		await this.database.deleteSubscriberByToken(token);
-	}
+  async unsubscribe(token: string): Promise<void> {
+    await this.readSubscriberByToken(token);
+    await this.database.deleteSubscriberByToken(token);
+  }
 }
 
 function generateToken() {
-	return randomBytes(32).toString('base64url');
+  return randomBytes(32).toString("base64url");
 }
 
 export class InvalidEmailError extends Error {}

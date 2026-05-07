@@ -1,31 +1,31 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>{SITE_TITLE}</h1>
-			<p>Subscribe to stay in touch and receive notifications for new posts.</p>
-			<form method="post" action="/subscribe">
-				<input
-					type="email"
-					name="email"
-					placeholder="me@gmail.com"
-					autocomplete="email"
-					required
-				/>
-				<button type="submit">Subscribe</button>
-			</form>
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>{SITE_TITLE}</h1>
+      <p>Subscribe to stay in touch and receive notifications for new posts.</p>
+      <form method="post" action="/subscribe">
+        <input
+          type="email"
+          name="email"
+          placeholder="me@gmail.com"
+          autocomplete="email"
+          required
+        />
+        <button type="submit">Subscribe</button>
+      </form>
+    </main>
+    <Footer />
+  </body>
 </html>
