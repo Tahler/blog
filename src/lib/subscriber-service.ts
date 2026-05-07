@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 
 import { Subscriber, database } from './database';
 import { emailer } from './email';
@@ -33,7 +33,6 @@ export class SubscriberService {
     const input = {
       email: normalizedEmail,
       token: token,
-      tokenHash: hash(token),
       tokenCreatedAt: now,
     };
     if (existing) {
@@ -51,12 +50,11 @@ export class SubscriberService {
 		if (!token) {
 			return false;
 		}
-		const tokenHash = hash(token);
-		const subscriber = await this.database.readSubscriberByTokenHash(tokenHash);
-		if (!subscriber || !subscriber.token || !subscriber.tokenHash) {
+		const subscriber = await this.database.readSubscriberByToken(token);
+		if (!subscriber || !subscriber.token) {
 			return false;
 		}
-		await this.database.updateActive(tokenHash);
+		await this.database.updateActive(token);
 		return true;
 	}
 
@@ -64,13 +62,13 @@ export class SubscriberService {
 		if (!token) {
 			return null;
 		}
-		return this.database.readSubscriberByTokenHash(hash(token));
+		return this.database.readSubscriberByToken(token);
 	}
 
 	async updatePreferences(token: string, input: { name: string; wantsProjects: boolean; wantsThoughts: boolean }): Promise<void> {
 		const name = input.name.trim();
 		await this.database.updatePreferences({
-			tokenHash: hash(token),
+			token,
 			name: name || null,
 			wantsProjects: input.wantsProjects,
 			wantsThoughts: input.wantsThoughts,
@@ -80,10 +78,6 @@ export class SubscriberService {
 
 function generateToken() {
 	return randomBytes(32).toString('base64url');
-}
-
-function hash(token: string) {
-	return createHash('sha256').update(token).digest('hex');
 }
 
 export class InvalidEmailError extends Error {}

@@ -4,10 +4,10 @@ import { getEnv } from './env';
 
 export interface Database {
 	readSubscriberByEmail(email: string): Promise<Subscriber | null>;
-	readSubscriberByTokenHash(tokenHash: string): Promise<Subscriber | null>;
+	readSubscriberByToken(token: string): Promise<Subscriber | null>;
 	createPendingSubscriber(input: PendingSubscriberInput): Promise<void>;
 	updatePendingSubscriber(input: PendingSubscriberInput): Promise<void>;
-	updateActive(tokenHash: string): Promise<void>;
+	updateActive(token: string): Promise<void>;
 	updatePreferences(input: PreferencesInput): Promise<void>;
 	updateLastEmailSentAt(email: string, sentAt: Date): Promise<void>;
 }
@@ -15,12 +15,11 @@ export interface Database {
 export interface PendingSubscriberInput {
 	email: string;
 	token: string;
-	tokenHash: string;
 	tokenCreatedAt: Date;
 }
 
 export interface PreferencesInput {
-	tokenHash: string;
+	token: string;
 	name: string | null;
 	wantsProjects: boolean;
 	wantsThoughts: boolean;
@@ -34,7 +33,6 @@ export class Subscriber {
 		readonly name: string | null,
 		readonly active: boolean,
 		readonly token: string | null,
-		readonly tokenHash: string | null,
 		readonly tokenCreatedAt: Date | null,
 		readonly lastEmailSentAt: Date | null,
 		readonly wantsProjects: boolean,
@@ -58,7 +56,6 @@ export class Subscriber {
       row.name as string | null,
       Boolean(row.active),
       row.token as string | null,
-      row.token_hash as string | null,
       row.token_created_at as Date | null,
       row.last_email_sent_at as Date | null,
       Boolean(row.wants_projects),
@@ -79,48 +76,47 @@ class NeonDatabase implements Database {
 		return rows[0] ? Subscriber.from(rows[0]) : null;
 	}
 
-	async readSubscriberByTokenHash(tokenHash: string) {
+	async readSubscriberByToken(token: string) {
 		const rows = await this.sql`
 			SELECT *
 			FROM subscribers
-			WHERE token_hash = ${tokenHash}
+			WHERE token = ${token}
 			LIMIT 1
 		`;
 		return rows[0] ? Subscriber.from(rows[0]) : null;
 	}
 
-	async createPendingSubscriber({ email, token, tokenHash, tokenCreatedAt }: PendingSubscriberInput) {
+	async createPendingSubscriber({ email, token, tokenCreatedAt }: PendingSubscriberInput) {
 		await this.sql`
-			INSERT INTO subscribers (email, active, token, token_hash, token_created_at)
-			VALUES (${email}, false, ${token}, ${tokenHash}, ${tokenCreatedAt})
+			INSERT INTO subscribers (email, active, token, token_created_at)
+			VALUES (${email}, false, ${token}, ${tokenCreatedAt})
 		`;
 	}
 
-	async updatePendingSubscriber({ email, token, tokenHash, tokenCreatedAt }: PendingSubscriberInput) {
+	async updatePendingSubscriber({ email, token, tokenCreatedAt }: PendingSubscriberInput) {
 		await this.sql`
 			UPDATE subscribers
 			SET token = ${token},
-				token_hash = ${tokenHash},
 				token_created_at = ${tokenCreatedAt}
 			WHERE email = ${email}
 		`;
 	}
 
-	async updateActive(tokenHash: string) {
+	async updateActive(token: string) {
 		await this.sql`
 			UPDATE subscribers
 			SET active = true
-			WHERE token_hash = ${tokenHash}
+			WHERE token = ${token}
 		`;
 	}
 
-	async updatePreferences({ tokenHash, name, wantsProjects, wantsThoughts }: PreferencesInput) {
+	async updatePreferences({ token, name, wantsProjects, wantsThoughts }: PreferencesInput) {
 		await this.sql`
 			UPDATE subscribers
 			SET name = ${name},
 				wants_projects = ${wantsProjects},
 				wants_thoughts = ${wantsThoughts}
-			WHERE token_hash = ${tokenHash}
+			WHERE token = ${token}
 		`;
 	}
 
@@ -139,8 +135,8 @@ class FakeDatabase implements Database {
 		return null;
 	}
 
-	async readSubscriberByTokenHash(tokenHash: string) {
-		console.log('FakeDatabase.readSubscriberByTokenHash', { tokenHash });
+	async readSubscriberByToken(token: string) {
+		console.log('FakeDatabase.readSubscriberByToken', { token });
 		return null;
 	}
 
@@ -152,8 +148,8 @@ class FakeDatabase implements Database {
 		console.log('FakeDatabase.updatePendingSubscriber', input);
 	}
 
-	async updateActive(tokenHash: string) {
-		console.log('FakeDatabase.updateActive', { tokenHash });
+	async updateActive(token: string) {
+		console.log('FakeDatabase.updateActive', { token });
 	}
 
 	async updatePreferences(input: PreferencesInput) {

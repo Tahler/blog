@@ -5,7 +5,6 @@ CREATE TABLE "subscribers" (
 	"name" text,
 	"active" boolean DEFAULT false NOT NULL,
 	"token" text,
-	"token_hash" text,
 	"token_created_at" timestamp,
 	"last_email_sent_at" timestamp,
 	"wants_projects" boolean DEFAULT true NOT NULL,
