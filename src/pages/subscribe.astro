@@ -5,7 +5,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_TITLE } from '../consts';
-import { subscriberService } from '../lib/subscriber-service';
+import { InvalidTokenError, subscriberService } from '../lib/subscriber-service';
 
 let title = '';
 let message = '';
@@ -16,12 +16,16 @@ if (Astro.request.method === 'GET') {
 		return Astro.redirect('/');
 	}
 
-	const valid = await subscriberService.confirmSubscriber(token);
-	if (valid) {
+	try {
+		await subscriberService.confirm(token);
 		const preferencesUrl = new URL('/preferences', Astro.url);
 		preferencesUrl.searchParams.set('t', token);
 		preferencesUrl.searchParams.set('confirmed', '1');
 		return Astro.redirect(preferencesUrl.toString());
+	} catch (error) {
+		if (!(error instanceof InvalidTokenError)) {
+			throw error;
+		}
 	}
 
 	title = 'Invalid link';

@@ -46,26 +46,26 @@ export class SubscriberService {
 		await this.database.updateLastEmailSentAt(normalizedEmail, now);
 	}
 
-	async confirmSubscriber(token: string): Promise<boolean> {
-		if (!token) {
-			return false;
-		}
-		const subscriber = await this.database.readSubscriberByToken(token);
-		if (!subscriber || !subscriber.token) {
-			return false;
-		}
+	async confirm(token: string): Promise<void> {
+		await this.readSubscriberByToken(token);
 		await this.database.updateActive(token);
-		return true;
 	}
 
 	async readSubscriberByToken(token: string): Promise<Subscriber> {
 		if (!token) {
-			return null;
+			throw new InvalidTokenError();
 		}
-		return this.database.readSubscriberByToken(token);
+
+		const subscriber = await this.database.readSubscriberByToken(token);
+		if (!subscriber) {
+			throw new InvalidTokenError();
+		}
+
+		return subscriber;
 	}
 
 	async updatePreferences(token: string, input: { name: string; wantsProjects: boolean; wantsThoughts: boolean }): Promise<void> {
+		await this.readSubscriberByToken(token);
 		const name = input.name.trim();
 		await this.database.updatePreferences({
 			token,
@@ -75,16 +75,9 @@ export class SubscriberService {
 		});
 	}
 
-	async unsubscribe(token: string): Promise<boolean> {
-		if (!token) {
-			return false;
-		}
-		const subscriber = await this.database.readSubscriberByToken(token);
-		if (!subscriber) {
-			return false;
-		}
+	async unsubscribe(token: string): Promise<void> {
+		await this.readSubscriberByToken(token);
 		await this.database.deleteSubscriberByToken(token);
-		return true;
 	}
 }
 
@@ -93,5 +86,7 @@ function generateToken() {
 }
 
 export class InvalidEmailError extends Error {}
+
+export class InvalidTokenError extends Error {}
 
 export const subscriberService = new SubscriberService(database, emailer);

@@ -5,7 +5,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_TITLE } from '../consts';
-import { subscriberService } from '../lib/subscriber-service';
+import { InvalidTokenError, subscriberService } from '../lib/subscriber-service';
 
 const token = Astro.url.searchParams.get('t') ?? '';
 if (!token) {
@@ -28,18 +28,29 @@ if (Astro.request.method === 'POST') {
 		preferencesUrl.searchParams.set('updated', '1');
 		return Astro.redirect(preferencesUrl.toString());
 	} catch (error) {
-    console.error(error);
-		title = 'Error';
-		message = 'Something went wrong.';
+		if (error instanceof InvalidTokenError) {
+			title = 'Invalid link';
+			message = 'The token is invalid.';
+		} else {
+			console.error(error);
+			title = 'Error';
+			message = 'Something went wrong.';
+		}
 	}
 } else if (Astro.request.method !== 'GET') {
 	return Astro.redirect('/');
 }
 
-const subscriber = await subscriberService.readSubscriberByToken(token);
-if (!subscriber) {
-	title = 'Invalid link';
-	message = 'The token is invalid.';
+let subscriber = null;
+try {
+	subscriber = await subscriberService.readSubscriberByToken(token);
+} catch (error) {
+	if (error instanceof InvalidTokenError) {
+		title = 'Invalid link';
+		message = 'The token is invalid.';
+	} else {
+		throw error;
+	}
 }
 
 if (subscriber) {
