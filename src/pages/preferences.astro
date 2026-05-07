@@ -1,0 +1,31 @@
+---
+export const prerender = false;
+
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const token = Astro.url.searchParams.get('t') ?? '';
+if (!token) {
+	return Astro.redirect('/');
+}
+
+const title = "You're subscribed";
+const message = 'Your subscription is confirmed. You will receive future posts by email.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${title} | ${SITE_TITLE}`} description={message} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>{title}</h1>
+			<p>{message}</p>
+		</main>
+		<Footer />
+	</body>
+</html>

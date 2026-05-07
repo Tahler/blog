@@ -17,13 +17,14 @@ if (Astro.request.method === 'GET') {
 	}
 
 	const valid = await subscriberService.confirmSubscriber(token);
-  if (valid) {
-    title = 'Subscription confirmed';
-    message = "You're subscribed and will receive future posts by email.";
-  } else {
-    title = 'Invalid link';
-    message = 'The confirmation link is invalid. Return home and subscribe again to receive a fresh link.';
-  }
+	if (valid) {
+		const preferencesUrl = new URL('/preferences', Astro.url);
+		preferencesUrl.searchParams.set('t', token);
+		return Astro.redirect(preferencesUrl.toString());
+	}
+
+	title = 'Invalid link';
+	message = 'The confirmation link is invalid. Return home and subscribe again to receive a fresh link.';
 } else if (Astro.request.method === 'POST') {
 	const formData = await Astro.request.formData();
 	const email = String(formData.get('email') ?? '');
