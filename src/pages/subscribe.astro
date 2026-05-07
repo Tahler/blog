@@ -1,0 +1,46 @@
+---
+export const prerender = false;
+
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import { subscriberService } from '../lib/subscriber-service';
+
+let title = '';
+let message = '';
+
+if (Astro.request.method !== 'POST') {
+	return Astro.redirect('/');
+}
+
+const formData = await Astro.request.formData();
+const email = String(formData.get('email') ?? '');
+
+try {
+  await subscriberService.createPendingSubscriber(email);
+  title = 'Check your email';
+  message = "Check your email for a confirmation link. If you don't receive an email, you might already be a subscriber.";
+} catch (error) {
+  console.error(error);
+  // TODO: Handle existing subscriber.
+  title = 'Subscription failed';
+  message = 'Enter an email address and try again.';
+}
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${title} | ${SITE_TITLE}`} description={message} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>{title}</h1>
+			<p>{message}</p>
+			<p><a href="/">Back home</a></p>
+		</main>
+		<Footer />
+	</body>
+</html>
