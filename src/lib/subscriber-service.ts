@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 
-import { database } from './database';
+import { Subscriber, database } from './database';
 import { emailer } from './email';
 
 export class SubscriberService {
@@ -58,6 +58,23 @@ export class SubscriberService {
 		}
 		await this.database.updateActive(tokenHash);
 		return true;
+	}
+
+	async readSubscriberByToken(token: string): Promise<Subscriber> {
+		if (!token) {
+			return null;
+		}
+		return this.database.readSubscriberByTokenHash(hash(token));
+	}
+
+	async updatePreferences(token: string, input: { name: string; wantsProjects: boolean; wantsThoughts: boolean }): Promise<void> {
+		const name = input.name.trim();
+		await this.database.updatePreferences({
+			tokenHash: hash(token),
+			name: name || null,
+			wantsProjects: input.wantsProjects,
+			wantsThoughts: input.wantsThoughts,
+		});
 	}
 }
 

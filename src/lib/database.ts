@@ -8,6 +8,7 @@ export interface Database {
 	createPendingSubscriber(input: PendingSubscriberInput): Promise<void>;
 	updatePendingSubscriber(input: PendingSubscriberInput): Promise<void>;
 	updateActive(tokenHash: string): Promise<void>;
+	updatePreferences(input: PreferencesInput): Promise<void>;
 	updateLastEmailSentAt(email: string, sentAt: Date): Promise<void>;
 }
 
@@ -16,6 +17,13 @@ export interface PendingSubscriberInput {
 	token: string;
 	tokenHash: string;
 	tokenCreatedAt: Date;
+}
+
+export interface PreferencesInput {
+	tokenHash: string;
+	name: string | null;
+	wantsProjects: boolean;
+	wantsThoughts: boolean;
 }
 
 export class Subscriber {
@@ -106,6 +114,16 @@ class NeonDatabase implements Database {
 		`;
 	}
 
+	async updatePreferences({ tokenHash, name, wantsProjects, wantsThoughts }: PreferencesInput) {
+		await this.sql`
+			UPDATE subscribers
+			SET name = ${name},
+				wants_projects = ${wantsProjects},
+				wants_thoughts = ${wantsThoughts}
+			WHERE token_hash = ${tokenHash}
+		`;
+	}
+
 	async updateLastEmailSentAt(email: string, sentAt: Date) {
 		await this.sql`
 			UPDATE subscribers
@@ -136,6 +154,10 @@ class FakeDatabase implements Database {
 
 	async updateActive(tokenHash: string) {
 		console.log('FakeDatabase.updateActive', { tokenHash });
+	}
+
+	async updatePreferences(input: PreferencesInput) {
+		console.log('FakeDatabase.updatePreferences', input);
 	}
 
 	async updateLastEmailSentAt(email: string, sentAt: Date) {

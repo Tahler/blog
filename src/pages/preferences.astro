@@ -5,14 +5,51 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_TITLE } from '../consts';
+import { subscriberService } from '../lib/subscriber-service';
 
 const token = Astro.url.searchParams.get('t') ?? '';
 if (!token) {
 	return Astro.redirect('/');
 }
 
-const title = "You're subscribed";
-const message = 'Your subscription is confirmed. You will receive future posts by email.';
+let title = 'Manage preferences';
+let message = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    await subscriberService.updatePreferences(token, {
+      name: String(formData.get('name') ?? ''),
+      wantsProjects: formData.get('wantsProjects') === 'on',
+      wantsThoughts: formData.get('wantsThoughts') === 'on',
+    });
+		const preferencesUrl = new URL('/preferences', Astro.url);
+		preferencesUrl.searchParams.set('t', token);
+		preferencesUrl.searchParams.set('updated', '1');
+		return Astro.redirect(preferencesUrl.toString());
+	} catch (error) {
+    console.error(error);
+		title = 'Error';
+		message = 'Something went wrong.';
+	}
+} else if (Astro.request.method !== 'GET') {
+	return Astro.redirect('/');
+}
+
+const subscriber = await subscriberService.readSubscriberByToken(token);
+if (!subscriber) {
+	title = 'Invalid link';
+	message = 'The token is invalid.';
+}
+
+if (subscriber && Astro.url.searchParams.get('updated') === '1') {
+	message = 'Your preferences have been updated.';
+}
+
+const name = subscriber?.name ?? '';
+const email = subscriber?.email ?? '';
+const wantsProjects = subscriber?.wantsProjects ?? false;
+const wantsThoughts = subscriber?.wantsThoughts ?? false;
 ---
 
 <!doctype html>
@@ -25,6 +62,40 @@ const message = 'Your subscription is confirmed. You will receive future posts b
 		<main>
 			<h1>{title}</h1>
 			<p>{message}</p>
+			{
+				subscriber ? (
+					<form method="post">
+						<p>
+							<label>
+								Email
+								<input type="email" value={email} disabled />
+							</label>
+						</p>
+						<p>
+							<label>
+								Name
+								<input type="text" name="name" value={name} autocomplete="name" />
+							</label>
+						</p>
+						<fieldset>
+							<legend>Topics</legend>
+							<label>
+								<input type="checkbox" name="wantsProjects" checked={wantsProjects} />
+								Projects
+							</label>
+							<label>
+								<input type="checkbox" name="wantsThoughts" checked={wantsThoughts} />
+								Thoughts
+							</label>
+						</fieldset>
+						<p>
+							<button type="submit">Save preferences</button>
+						</p>
+					</form>
+				) : (
+					<p><a href="/">Back home</a></p>
+				)
+			}
 		</main>
 		<Footer />
 	</body>
