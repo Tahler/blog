@@ -5,6 +5,7 @@ import { getEnv } from "./env";
 export interface Database {
   readSubscriberByEmail(email: string): Promise<Subscriber | null>;
   readSubscriberByToken(token: string): Promise<Subscriber | null>;
+  readActiveSubscribersByTag(tag: BlogPostTag): Promise<Subscriber[]>;
   createPendingSubscriber(input: PendingSubscriberInput): Promise<void>;
   updatePendingSubscriber(input: PendingSubscriberInput): Promise<void>;
   updateActive(token: string): Promise<void>;
@@ -12,6 +13,8 @@ export interface Database {
   deleteSubscriberByToken(token: string): Promise<void>;
   updateLastEmailSentAt(email: string, sentAt: Date): Promise<void>;
 }
+
+export type BlogPostTag = "projects" | "thoughts";
 
 export interface PendingSubscriberInput {
   email: string;
@@ -87,6 +90,31 @@ class NeonDatabase implements Database {
     return rows[0] ? Subscriber.from(rows[0]) : null;
   }
 
+  async readActiveSubscribersByTag(tag: BlogPostTag) {
+    const rows = await this.readActiveRowsByTag(tag);
+    return rows.map(Subscriber.from);
+  }
+
+  private readActiveRowsByTag(tag: BlogPostTag) {
+    switch (tag) {
+      case "projects":
+        return this.sql`
+          SELECT *
+          FROM subscribers
+          WHERE active = true
+            AND wants_projects = true
+        `;
+
+      case "thoughts":
+        return this.sql`
+          SELECT *
+          FROM subscribers
+          WHERE active = true
+            AND wants_thoughts = true
+        `;
+    }
+  }
+
   async createPendingSubscriber({
     email,
     token,
@@ -159,6 +187,11 @@ class FakeDatabase implements Database {
   async readSubscriberByToken(token: string) {
     console.log("FakeDatabase.readSubscriberByToken", { token });
     return null;
+  }
+
+  async readActiveSubscribersByTag(tag: BlogPostTag) {
+    console.log("FakeDatabase.readActiveSubscribersByTag", { tag });
+    return [];
   }
 
   async createPendingSubscriber(input: PendingSubscriberInput) {
