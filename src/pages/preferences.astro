@@ -42,8 +42,13 @@ if (!subscriber) {
 	message = 'The token is invalid.';
 }
 
-if (subscriber && Astro.url.searchParams.get('updated') === '1') {
-	message = 'Your preferences have been updated.';
+if (subscriber) {
+  if (Astro.url.searchParams.get('updated')) {
+    message = 'Your preferences have been updated.';
+  } else if (Astro.url.searchParams.get('confirmed')) {
+    title = "You're subscribed";
+    message = "It means a lot that you want to keep in touch. I'd love to know who's reading, so please add your name, especially if I wouldn't recognize you from your email :) Thanks for subscribing, and please feel free to reply directly to anything I send your way!";
+  }
 }
 
 const name = subscriber?.name ?? '';

@@ -20,6 +20,7 @@ if (Astro.request.method === 'GET') {
 	if (valid) {
 		const preferencesUrl = new URL('/preferences', Astro.url);
 		preferencesUrl.searchParams.set('t', token);
+		preferencesUrl.searchParams.set('confirmed', '1');
 		return Astro.redirect(preferencesUrl.toString());
 	}
 
