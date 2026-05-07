@@ -9,6 +9,7 @@ export interface Database {
 	updatePendingSubscriber(input: PendingSubscriberInput): Promise<void>;
 	updateActive(token: string): Promise<void>;
 	updatePreferences(input: PreferencesInput): Promise<void>;
+	deleteSubscriberByToken(token: string): Promise<void>;
 	updateLastEmailSentAt(email: string, sentAt: Date): Promise<void>;
 }
 
@@ -120,6 +121,13 @@ class NeonDatabase implements Database {
 		`;
 	}
 
+	async deleteSubscriberByToken(token: string) {
+		await this.sql`
+			DELETE FROM subscribers
+			WHERE token = ${token}
+		`;
+	}
+
 	async updateLastEmailSentAt(email: string, sentAt: Date) {
 		await this.sql`
 			UPDATE subscribers
@@ -154,6 +162,10 @@ class FakeDatabase implements Database {
 
 	async updatePreferences(input: PreferencesInput) {
 		console.log('FakeDatabase.updatePreferences', input);
+	}
+
+	async deleteSubscriberByToken(token: string) {
+		console.log('FakeDatabase.deleteSubscriberByToken', { token });
 	}
 
 	async updateLastEmailSentAt(email: string, sentAt: Date) {

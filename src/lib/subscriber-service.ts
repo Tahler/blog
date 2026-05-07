@@ -74,6 +74,18 @@ export class SubscriberService {
 			wantsThoughts: input.wantsThoughts,
 		});
 	}
+
+	async unsubscribe(token: string): Promise<boolean> {
+		if (!token) {
+			return false;
+		}
+		const subscriber = await this.database.readSubscriberByToken(token);
+		if (!subscriber) {
+			return false;
+		}
+		await this.database.deleteSubscriberByToken(token);
+		return true;
+	}
 }
 
 function generateToken() {
