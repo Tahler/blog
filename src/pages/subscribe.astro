@@ -18,7 +18,8 @@ const formData = await Astro.request.formData();
 const email = String(formData.get('email') ?? '');
 
 try {
-  await subscriberService.createPendingSubscriber(email);
+  const confirmationUrl = new URL('/subscribe', Astro.url);
+  await subscriberService.createPendingSubscriber(email, confirmationUrl);
   title = 'Check your email';
   message = "Check your email for a confirmation link. If you don't receive an email, you might already be a subscriber.";
 } catch (error) {

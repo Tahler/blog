@@ -21,6 +21,7 @@
     "@neondatabase/serverless": "^1.0.2",
     "astro": "^6.1.9",
     "drizzle-orm": "^0.45.1",
+    "resend": "^6.12.2",
     "sharp": "^0.34.3"
   },
   "devDependencies": {
