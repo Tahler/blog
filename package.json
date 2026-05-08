@@ -21,10 +21,14 @@
     "@neondatabase/serverless": "^1.0.2",
     "astro": "^6.1.9",
     "drizzle-orm": "^0.45.1",
+    "markdown-it": "^14.1.1",
     "resend": "^6.12.2",
+    "sanitize-html": "^2.17.3",
     "sharp": "^0.34.3"
   },
   "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/sanitize-html": "^2.16.1",
     "dotenv": "^17.3.1",
     "drizzle-kit": "^0.31.10",
     "prettier": "^3.6.2",

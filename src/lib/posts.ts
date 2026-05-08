@@ -7,6 +7,7 @@ function toPost(entry: BlogEntry): Post {
     ...entry.data,
     date: new Date(entry.data.date),
     url: `/blog/${entry.id}/`,
+    body: entry.body || "",
   };
 }
 
@@ -16,6 +17,7 @@ export interface Post {
   description: string;
   date: Date;
   tag: BlogEntry["data"]["tag"];
+  body: string;
 }
 
 export async function getSortedPosts(): Promise<Post[]> {
