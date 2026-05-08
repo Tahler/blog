@@ -1,0 +1,26 @@
+name: Notify subscribers
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: Post slug to send
+        required: true
+        type: string
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call https://bertyl.com/blog/{slug}/notify
+        env:
+          NOTIFY_URL: https://bertyl.com/blog/${{ inputs.slug }}/notify
+          NOTIFY_API_SECRET: ${{ secrets.NOTIFY_API_SECRET }}
+        run: |
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            -X POST \
+            -H "Authorization: Bearer ${NOTIFY_API_SECRET}" \
+            "${NOTIFY_URL}"
