@@ -178,40 +178,40 @@ class NeonDatabase implements SubscriberStore {
   }
 }
 
-class FakeDatabase implements SubscriberStore {
+class FakeSubscriberStore implements SubscriberStore {
   async readByEmail(email: string) {
-    console.log("FakeDatabase.readSubscriberByEmail", { email });
+    console.log("FakeSubscriberStore.readSubscriberByEmail", { email });
     return null;
   }
 
   async readByToken(token: string) {
-    console.log("FakeDatabase.readSubscriberByToken", { token });
+    console.log("FakeSubscriberStore.readSubscriberByToken", { token });
     return null;
   }
 
   async readByTag(tag: BlogPostTag) {
-    console.log("FakeDatabase.readActiveSubscribersByTag", { tag });
+    console.log("FakeSubscriberStore.readActiveSubscribersByTag", { tag });
     return [];
   }
 
   async create(input: PendingSubscriberInput) {
-    console.log("FakeDatabase.createPendingSubscriber", input);
+    console.log("FakeSubscriberStore.createPendingSubscriber", input);
   }
 
   async updateLastEmailSentAt(email: string, sentAt: Date) {
-    console.log("FakeDatabase.updateLastEmailSentAt", { email, sentAt });
+    console.log("FakeSubscriberStore.updateLastEmailSentAt", { email, sentAt });
   }
 
   async updateActive(token: string) {
-    console.log("FakeDatabase.updateActive", { token });
+    console.log("FakeSubscriberStore.updateActive", { token });
   }
 
   async updatePreferences(input: PreferencesInput) {
-    console.log("FakeDatabase.updatePreferences", input);
+    console.log("FakeSubscriberStore.updatePreferences", input);
   }
 
   async deleteByToken(token: string) {
-    console.log("FakeDatabase.deleteSubscriberByToken", { token });
+    console.log("FakeSubscriberStore.deleteSubscriberByToken", { token });
   }
 }
 
@@ -219,4 +219,4 @@ const connectionString = import.meta.env.NEON_DATABASE_URL;
 
 export const subscriberStore: SubscriberStore = connectionString
   ? new NeonDatabase(connectionString)
-  : new FakeDatabase();
+  : new FakeSubscriberStore();
