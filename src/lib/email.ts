@@ -25,20 +25,20 @@ class ResendEmailer implements Emailer {
       to: toEmail,
       subject: "You're almost subscribed",
       html: `
-				<div style="font-family: sans-serif; line-height: 1.5; color: #111;">
-					<p>You're almost subscribed!</p>
-					<p>Just click the link below to receive future posts in your inbox.</p>
-					<p>
-						<a
-							href="${confirmationUrl}"
-							style="display: inline-block; padding: 12px 16px; border-radius: 6px; background: #0f766e; color: #fff; text-decoration: none; font-weight: 600;"
-						>
-							Confirm subscription
-						</a>
-					</p>
-					<p>Don't want to subscribe? Feel free to ignore this email.</p>
-				</div>
-			`,
+        <div style="font-family: sans-serif; line-height: 1.5; color: #111;">
+          <p>You're almost subscribed!</p>
+          <p>Just click the link below to receive future posts in your inbox.</p>
+          <p>
+            <a
+              href="${confirmationUrl}"
+              style="display: inline-block; padding: 12px 16px; border-radius: 6px; background: #0f766e; color: #fff; text-decoration: none; font-weight: 600;"
+            >
+              Confirm subscription
+            </a>
+          </p>
+          <p>Don't want to subscribe? Feel free to ignore this email.</p>
+        </div>
+      `,
     });
   }
 
@@ -48,12 +48,12 @@ class ResendEmailer implements Emailer {
       to: input.toEmail,
       subject: input.subject,
       html: `
-				<div style="font-family: sans-serif; line-height: 1.5; color: #111;">
-        <p><a href="${input.postUrl}">Read on the web</a></p>
-					<p><a href="${input.preferencesUrl}">Manage preferences</a></p>
-					<p><a href="${input.unsubscribeUrl}">Unsubscribe</a></p>
-				</div>
-			`,
+        <div style="font-family: sans-serif; line-height: 1.5; color: #111;">
+          <p><a href="${input.postUrl}">Read on the web</a></p>
+          <p><a href="${input.preferencesUrl}">Manage preferences</a></p>
+          <p><a href="${input.unsubscribeUrl}">Unsubscribe</a></p>
+        </div>
+      `,
     });
   }
 }
