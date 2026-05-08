@@ -61,7 +61,7 @@ This app handles subscription, authentication, and notification all via email.
 
 1. Alice visits the home page (`GET /`), enters `alice@email.com` and clicks "Subscribe" (`POST /subscribe(email)`)
 1. App generates long-lived, all-purpose token
-1. App inserts to `subscribers` table: `email=normalize(alice@email.com), token={token}, token_created_at={now}, active=false`
+1. App inserts to `subscribers` table: `email=normalize(alice@email.com), token={token}, active=false`
 1. App (using Resend) sends email with a confirmation link with the token. It should say something like "You're almost subscribed! Just click the link below to receive future posts in your inbox. `<Button>Confirm subscription</Button>` Don't want to subscribe? Feel free to ignore this email."
 1. App renders "Check your email for a confirmation link. If you don't receive an email, you might already be a subscriber."
 1. Alice opens inbox and clicks confirmation link (`GET /subscribe?t={token}`)
@@ -74,7 +74,7 @@ The app sends at most one subscription-related email per subscriber every 5 minu
 ### Unconfirmed subscriber re-subscribes
 
 1. Alice, before clicking the "Confirm subscription" link in their email, visits the home page and enters `alice@email.com` again (`POST /subscribe(email)`)
-1. App sees existing `email={email} and active={false}` entry in `subscribers` so it follows this behavior: if the token was created more than 5 minutes ago, the app can regenerate a new one: update `token` and `token_created_at` and send another email.
+1. App sees existing `email={email} and active={false}` entry in `subscribers` and, if the last subscription-related email was sent more than 5 minutes ago, regenerates `token` and sends another email.
 1. App still renders "Check your email for a confirmation link. If you don't receive an email, you might already be a subscriber."
 
 ### Confirmed subscriber re-subscribes

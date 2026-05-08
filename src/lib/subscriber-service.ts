@@ -48,21 +48,11 @@ export class SubscriberService {
         return;
       }
 
-      if (existing.tokenCreatedAt && !tokenExpired(existing.tokenCreatedAt, now)) {
-        console.log(
-          "Refusing to rotate fresh confirmation token for",
-          existing.email,
-          "created at",
-          existing.tokenCreatedAt,
-        );
-        return;
-      }
     }
     const token = generateToken();
     const input = {
       email: normalizedEmail,
       token: token,
-      tokenCreatedAt: now,
     };
     if (existing) {
       await this.store.updatePending(input);
@@ -161,11 +151,6 @@ export class SubscriberService {
 
 function generateToken() {
   return randomBytes(32).toString("base64url");
-}
-
-function tokenExpired(tokenCreatedAt: Date, now: Date) {
-  const fiveMinutes = 5 * 60 * 1000;
-  return now.getTime() - tokenCreatedAt.getTime() >= fiveMinutes;
 }
 
 export class InvalidEmailError extends Error { }

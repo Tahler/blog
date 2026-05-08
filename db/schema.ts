@@ -7,7 +7,6 @@ export const subscribers = pgTable("subscribers", {
   name: text("name"),
   active: boolean("active").notNull().default(false),
   token: text("token"),
-  tokenCreatedAt: timestamp("token_created_at"),
   lastEmailSentAt: timestamp("last_email_sent_at"),
   wantsProjects: boolean("wants_projects").notNull().default(true),
   wantsThoughts: boolean("wants_thoughts").notNull().default(true),

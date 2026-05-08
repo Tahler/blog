@@ -17,7 +17,6 @@ export type BlogPostTag = "projects" | "thoughts";
 export interface PendingSubscriberInput {
   email: string;
   token: string;
-  tokenCreatedAt: Date;
 }
 
 export interface PreferencesInput {
@@ -35,7 +34,6 @@ export class Subscriber {
     readonly name: string | null,
     readonly active: boolean,
     readonly token: string | null,
-    readonly tokenCreatedAt: Date | null,
     readonly lastEmailSentAt: Date | null,
     readonly wantsProjects: boolean,
     readonly wantsThoughts: boolean,
@@ -58,7 +56,6 @@ export class Subscriber {
       row.name as string | null,
       Boolean(row.active),
       row.token as string | null,
-      row.token_created_at as Date | null,
       row.last_email_sent_at as Date | null,
       Boolean(row.wants_projects),
       Boolean(row.wants_thoughts),
@@ -120,23 +117,20 @@ class NeonDatabase implements SubscriberStore {
   async createPending({
     email,
     token,
-    tokenCreatedAt,
   }: PendingSubscriberInput) {
     await this.sql`
-			INSERT INTO subscribers (email, active, token, token_created_at)
-			VALUES (${email}, false, ${token}, ${tokenCreatedAt})
+			INSERT INTO subscribers (email, active, token)
+			VALUES (${email}, false, ${token})
 		`;
   }
 
   async updatePending({
     email,
     token,
-    tokenCreatedAt,
   }: PendingSubscriberInput) {
     await this.sql`
 			UPDATE subscribers
-			SET token = ${token},
-				token_created_at = ${tokenCreatedAt}
+			SET token = ${token}
 			WHERE email = ${email}
 		`;
   }
