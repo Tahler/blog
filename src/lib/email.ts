@@ -8,6 +8,7 @@ export interface Emailer {
 export interface PostInput {
   toEmail: string;
   subject: string;
+  contentHtml: string;
   postUrl: string;
   preferencesUrl: string;
   unsubscribeUrl: string;
@@ -49,6 +50,7 @@ class ResendEmailer implements Emailer {
       subject: input.subject,
       html: `
         <div style="font-family: sans-serif; line-height: 1.5; color: #111;">
+          ${input.contentHtml}
           <p><a href="${input.postUrl}">Read on the web</a></p>
           <p><a href="${input.preferencesUrl}">Manage preferences</a></p>
           <p><a href="${input.unsubscribeUrl}">Unsubscribe</a></p>

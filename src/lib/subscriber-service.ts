@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 
 import { database, type Database, type Subscriber } from "./database";
 import { emailer, type Emailer } from "./email";
+import { renderPost } from "./render-post";
 import type { Post } from "./posts";
 
 export class SubscriberService {
@@ -95,6 +96,7 @@ export class SubscriberService {
 
   async sendPost(post: Post, site: URL) {
     const postUrl = new URL(post.url, site).toString();
+    const contentHtml = renderPost(post);
     const subscribers = await this.database.readActiveSubscribersByTag(
       post.tag,
     );
@@ -117,6 +119,7 @@ export class SubscriberService {
         await this.emailer.sendPost({
           toEmail: subscriber.email,
           subject: post.title,
+          contentHtml,
           postUrl,
           preferencesUrl: preferencesUrl.toString(),
           unsubscribeUrl: unsubscribeUrl.toString(),
