@@ -1,11 +1,8 @@
 import rss from "@astrojs/rss";
-import MarkdownIt from "markdown-it";
-import sanitizeHtml from "sanitize-html";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import { renderPost } from "../lib/render-post";
 import { getSortedPosts } from "../lib/posts";
 import type { APIRoute } from "astro";
-
-const parser = new MarkdownIt();
 
 export const GET: APIRoute = async ({ site }) => {
   const posts = await getSortedPosts();
@@ -19,9 +16,7 @@ export const GET: APIRoute = async ({ site }) => {
       pubDate: post.date,
       categories: [post.tag],
       link: post.url,
-      content: sanitizeHtml(parser.render(post.body), {
-        allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-      }),
+      content: renderPost(post),
     })),
   });
 };
