@@ -47,18 +47,16 @@ export class SubscriberService {
         );
         return;
       }
+    }
 
+    const token = existing?.token ?? generateToken();
+    if (!existing) {
+      await this.store.createPending({
+        email: normalizedEmail,
+        token,
+      });
     }
-    const token = generateToken();
-    const input = {
-      email: normalizedEmail,
-      token: token,
-    };
-    if (existing) {
-      await this.store.updatePending(input);
-    } else {
-      await this.store.createPending(input);
-    }
+
     const confirmationUrl = new URL("/subscribe", origin);
     confirmationUrl.searchParams.set("t", token);
     await this.emailer.sendConfirmation(

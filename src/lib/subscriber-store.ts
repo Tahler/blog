@@ -5,7 +5,6 @@ export interface SubscriberStore {
   readByToken(token: string): Promise<Subscriber | null>;
   readByTag(tag: BlogPostTag): Promise<Subscriber[]>;
   createPending(input: PendingSubscriberInput): Promise<void>;
-  updatePending(input: PendingSubscriberInput): Promise<void>;
   updateActive(token: string): Promise<void>;
   updatePreferences(input: PreferencesInput): Promise<void>;
   deleteByToken(token: string): Promise<void>;
@@ -124,17 +123,6 @@ class NeonDatabase implements SubscriberStore {
 		`;
   }
 
-  async updatePending({
-    email,
-    token,
-  }: PendingSubscriberInput) {
-    await this.sql`
-			UPDATE subscribers
-			SET token = ${token}
-			WHERE email = ${email}
-		`;
-  }
-
   async updateActive(token: string) {
     await this.sql`
 			UPDATE subscribers
@@ -193,10 +181,6 @@ class FakeDatabase implements SubscriberStore {
 
   async createPending(input: PendingSubscriberInput) {
     console.log("FakeDatabase.createPendingSubscriber", input);
-  }
-
-  async updatePending(input: PendingSubscriberInput) {
-    console.log("FakeDatabase.updatePendingSubscriber", input);
   }
 
   async updateActive(token: string) {

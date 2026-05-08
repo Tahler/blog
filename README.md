@@ -74,7 +74,7 @@ The app sends at most one subscription-related email per subscriber every 5 minu
 ### Unconfirmed subscriber re-subscribes
 
 1. Alice, before clicking the "Confirm subscription" link in their email, visits the home page and enters `alice@email.com` again (`POST /subscribe(email)`)
-1. App sees existing `email={email} and active={false}` entry in `subscribers` and, if the last subscription-related email was sent more than 5 minutes ago, regenerates `token` and sends another email.
+1. App sees existing `email={email} and active={false}` entry in `subscribers` and, if the last subscription-related email was sent more than 5 minutes ago, resends the confirmation email.
 1. App still renders "Check your email for a confirmation link. If you don't receive an email, you might already be a subscriber."
 
 ### Confirmed subscriber re-subscribes
