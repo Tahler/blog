@@ -5,10 +5,10 @@ export interface SubscriberStore {
   readByToken(token: string): Promise<Subscriber | null>;
   readByTag(tag: BlogPostTag): Promise<Subscriber[]>;
   create(input: PendingSubscriberInput): Promise<void>;
+  updateLastEmailSentAt(email: string, sentAt: Date): Promise<void>;
   updateActive(token: string): Promise<void>;
   updatePreferences(input: PreferencesInput): Promise<void>;
   deleteByToken(token: string): Promise<void>;
-  updateLastEmailSentAt(email: string, sentAt: Date): Promise<void>;
 }
 
 export type BlogPostTag = "projects" | "thoughts";
@@ -138,6 +138,14 @@ class NeonDatabase implements SubscriberStore {
 		`;
   }
 
+  async updateLastEmailSentAt(email: string, sentAt: Date) {
+    await this.sql`
+			UPDATE subscribers
+			SET last_email_sent_at = ${sentAt}
+			WHERE email = ${email}
+		`;
+  }
+
   async updateActive(token: string) {
     await this.sql`
 			UPDATE subscribers
@@ -168,14 +176,6 @@ class NeonDatabase implements SubscriberStore {
 			WHERE token = ${token}
 		`;
   }
-
-  async updateLastEmailSentAt(email: string, sentAt: Date) {
-    await this.sql`
-			UPDATE subscribers
-			SET last_email_sent_at = ${sentAt}
-			WHERE email = ${email}
-		`;
-  }
 }
 
 class FakeDatabase implements SubscriberStore {
@@ -198,6 +198,10 @@ class FakeDatabase implements SubscriberStore {
     console.log("FakeDatabase.createPendingSubscriber", input);
   }
 
+  async updateLastEmailSentAt(email: string, sentAt: Date) {
+    console.log("FakeDatabase.updateLastEmailSentAt", { email, sentAt });
+  }
+
   async updateActive(token: string) {
     console.log("FakeDatabase.updateActive", { token });
   }
@@ -208,10 +212,6 @@ class FakeDatabase implements SubscriberStore {
 
   async deleteByToken(token: string) {
     console.log("FakeDatabase.deleteSubscriberByToken", { token });
-  }
-
-  async updateLastEmailSentAt(email: string, sentAt: Date) {
-    console.log("FakeDatabase.updateLastEmailSentAt", { email, sentAt });
   }
 }
 
