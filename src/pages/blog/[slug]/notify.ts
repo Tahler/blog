@@ -2,7 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 
-import { getPostBySlug } from "../../../lib/posts";
+import { getPost } from "../../../lib/posts";
 import { subscriberService } from "../../../lib/subscriber-service";
 
 export const POST: APIRoute = async ({ params, request, site }) => {
@@ -24,7 +24,7 @@ export const POST: APIRoute = async ({ params, request, site }) => {
     return Response.json({ error: "Missing slug" }, { status: 400 });
   }
 
-  const post = await getPostBySlug(slug);
+  const post = await getPost(slug);
   if (!post) {
     return Response.json({ error: "Post not found" }, { status: 404 });
   }
@@ -38,7 +38,7 @@ export const POST: APIRoute = async ({ params, request, site }) => {
 
   const result = await subscriberService.sendPost(post, site);
   return Response.json({
-    title: result.post.data.title,
+    title: result.post.title,
     recipientCount: result.sentCount,
     sentCount: result.sentCount,
     errorsByEmail: result.errorsByEmail,

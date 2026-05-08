@@ -96,7 +96,7 @@ export class SubscriberService {
   async sendPost(post: Post, site: URL) {
     const postUrl = new URL(post.url, site).toString();
     const subscribers = await this.database.readActiveSubscribersByTag(
-      post.data.tag,
+      post.tag,
     );
     let sentCount = 0;
     const errorsByEmail: Record<string, string> = {};
@@ -116,7 +116,7 @@ export class SubscriberService {
       try {
         await this.emailer.sendPost({
           toEmail: subscriber.email,
-          subject: post.data.title,
+          subject: post.title,
           postUrl,
           preferencesUrl: preferencesUrl.toString(),
           unsubscribeUrl: unsubscribeUrl.toString(),

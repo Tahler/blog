@@ -65,9 +65,9 @@ const posts = await getSortedPosts();
             posts.map((post) => (
               <li>
                 <a href={post.url}>
-                  <h4 class="title">{post.data.title}</h4>
+                  <h4 class="title">{post.title}</h4>
                   <p class="date">
-                    <FormattedDate date={post.data.date} />
+                    <FormattedDate date={post.date} />
                   </p>
                 </a>
               </li>
