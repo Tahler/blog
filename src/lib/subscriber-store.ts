@@ -60,6 +60,21 @@ export class Subscriber {
       Boolean(row.wants_thoughts),
     );
   }
+
+  static build(overrides: Partial<Subscriber> & Pick<Subscriber, "email">): Subscriber {
+    return new Subscriber(
+      overrides.id ?? 1,
+      overrides.createdAt ?? new Date("2026-05-01T00:00:00Z"),
+      overrides.email,
+      overrides.name ?? null,
+      overrides.active ?? true,
+      "token" in overrides ? overrides.token! : "subscriber-token",
+      "lastEmailSentAt" in overrides ? overrides.lastEmailSentAt! : null,
+      overrides.wantsProjects ?? true,
+      overrides.wantsThoughts ?? true,
+    );
+  }
+
 }
 class NeonDatabase implements SubscriberStore {
   private readonly sql;
