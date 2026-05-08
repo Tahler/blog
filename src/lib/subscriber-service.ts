@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 
-import { subscriberStore, type SubscriberStore, type Subscriber } from "./database";
+import { subscriberStore, type SubscriberStore, type Subscriber } from "./subscriber-store";
 import { emailer, type Emailer } from "./email";
 import { renderPost } from "./render-post";
 import type { Post } from "./posts";
