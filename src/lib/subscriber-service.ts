@@ -51,7 +51,7 @@ export class SubscriberService {
 
     const token = existing?.token ?? generateToken();
     if (!existing) {
-      await this.store.createPending({
+      await this.store.create({
         email: normalizedEmail,
         token,
       });
