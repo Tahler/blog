@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 
 import { database, type Database, type Subscriber } from "./database";
 import { emailer, type Emailer } from "./email";
+import type { Post } from "./posts";
 
 export class SubscriberService {
   constructor(
@@ -90,6 +91,49 @@ export class SubscriberService {
   async unsubscribe(token: string): Promise<void> {
     await this.readSubscriberByToken(token);
     await this.database.deleteSubscriberByToken(token);
+  }
+
+  async sendPost(post: Post, site: URL) {
+    const postUrl = new URL(post.url, site).toString();
+    const subscribers = await this.database.readActiveSubscribersByTag(
+      post.data.tag,
+    );
+    let sentCount = 0;
+    const errorsByEmail: Record<string, string> = {};
+
+    for (const subscriber of subscribers) {
+      if (!subscriber.token) {
+        errorsByEmail[subscriber.email] = "Missing token";
+        continue;
+      }
+
+      const preferencesUrl = new URL("/preferences", site);
+      preferencesUrl.searchParams.set("t", subscriber.token);
+
+      const unsubscribeUrl = new URL("/unsubscribe", site);
+      unsubscribeUrl.searchParams.set("t", subscriber.token);
+
+      try {
+        await this.emailer.sendPost({
+          toEmail: subscriber.email,
+          subject: post.data.title,
+          postUrl,
+          preferencesUrl: preferencesUrl.toString(),
+          unsubscribeUrl: unsubscribeUrl.toString(),
+        });
+        sentCount += 1;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        errorsByEmail[subscriber.email] = message;
+      }
+    }
+
+    return {
+      post,
+      subscriberCount: subscribers.length,
+      sentCount,
+      errorsByEmail,
+    };
   }
 }
 

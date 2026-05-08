@@ -4,6 +4,15 @@ import { getEnv } from "./env";
 
 export interface Emailer {
   sendConfirmation(toEmail: string, confirmationUrl: string): Promise<void>;
+  sendPost(input: PostInput): Promise<void>;
+}
+
+export interface PostInput {
+  toEmail: string;
+  subject: string;
+  postUrl: string;
+  preferencesUrl: string;
+  unsubscribeUrl: string;
 }
 
 class ResendEmailer implements Emailer {
@@ -34,11 +43,30 @@ class ResendEmailer implements Emailer {
 			`,
     });
   }
+
+  async sendPost(input: PostInput) {
+    await this.client.emails.send({
+      from: this.fromEmail,
+      to: input.toEmail,
+      subject: input.subject,
+      html: `
+				<div style="font-family: sans-serif; line-height: 1.5; color: #111;">
+        <p><a href="${input.postUrl}">Read on the web</a></p>
+					<p><a href="${input.preferencesUrl}">Manage preferences</a></p>
+					<p><a href="${input.unsubscribeUrl}">Unsubscribe</a></p>
+				</div>
+			`,
+    });
+  }
 }
 
 class FakeEmailer implements Emailer {
   async sendConfirmation(toEmail: string, confirmationUrl: string) {
     console.log("FakeEmailer.sendConfirmation", { toEmail, confirmationUrl });
+  }
+
+  async sendPost(input: PostInput) {
+    console.log("FakeEmailer.sendPost", input);
   }
 }
 
@@ -49,7 +77,7 @@ function createEmailer(): Emailer {
     return new ResendEmailer(fromEmail, new Resend(resendApiKey));
   }
 
-  console.log("Missing email env vars for subscription confirmation email", {
+  console.log("Missing email env vars for Resend email delivery", {
     RESEND_API_KEY: !!resendApiKey,
     RESEND_FROM_EMAIL: !!fromEmail,
   });
