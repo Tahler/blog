@@ -40,7 +40,7 @@ if (Astro.request.method === "GET") {
 
   try {
     const confirmationUrl = new URL("/subscribe", Astro.url);
-    await subscriberService.createPendingSubscriber(email, confirmationUrl);
+    await subscriberService.create(email, confirmationUrl);
     title = "Check your email";
     message =
       "Check your email for a confirmation link. If you don't receive an email, you might already be a subscriber.";

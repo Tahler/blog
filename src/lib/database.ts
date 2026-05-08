@@ -1,14 +1,14 @@
 import { neon } from "@neondatabase/serverless";
 
-export interface Database {
-  readSubscriberByEmail(email: string): Promise<Subscriber | null>;
-  readSubscriberByToken(token: string): Promise<Subscriber | null>;
-  readActiveSubscribersByTag(tag: BlogPostTag): Promise<Subscriber[]>;
-  createPendingSubscriber(input: PendingSubscriberInput): Promise<void>;
-  updatePendingSubscriber(input: PendingSubscriberInput): Promise<void>;
+export interface SubscriberStore {
+  readByEmail(email: string): Promise<Subscriber | null>;
+  readByToken(token: string): Promise<Subscriber | null>;
+  readByTag(tag: BlogPostTag): Promise<Subscriber[]>;
+  createPending(input: PendingSubscriberInput): Promise<void>;
+  updatePending(input: PendingSubscriberInput): Promise<void>;
   updateActive(token: string): Promise<void>;
   updatePreferences(input: PreferencesInput): Promise<void>;
-  deleteSubscriberByToken(token: string): Promise<void>;
+  deleteByToken(token: string): Promise<void>;
   updateLastEmailSentAt(email: string, sentAt: Date): Promise<void>;
 }
 
@@ -22,7 +22,7 @@ export interface PendingSubscriberInput {
 
 export interface PreferencesInput {
   token: string;
-  name: string | null;
+  name?: string;
   wantsProjects: boolean;
   wantsThoughts: boolean;
 }
@@ -39,7 +39,7 @@ export class Subscriber {
     readonly lastEmailSentAt: Date | null,
     readonly wantsProjects: boolean,
     readonly wantsThoughts: boolean,
-  ) {}
+  ) { }
 
   canSendEmail(now = new Date()) {
     if (!this.lastEmailSentAt) {
@@ -65,14 +65,14 @@ export class Subscriber {
     );
   }
 }
-class NeonDatabase implements Database {
+class NeonDatabase implements SubscriberStore {
   private readonly sql;
 
   constructor(connectionString: string) {
     this.sql = neon(connectionString);
   }
 
-  async readSubscriberByEmail(email: string) {
+  async readByEmail(email: string) {
     const rows = await this.sql`
 			SELECT *
 			FROM subscribers
@@ -82,7 +82,7 @@ class NeonDatabase implements Database {
     return rows[0] ? Subscriber.from(rows[0]) : null;
   }
 
-  async readSubscriberByToken(token: string) {
+  async readByToken(token: string) {
     const rows = await this.sql`
 			SELECT *
 			FROM subscribers
@@ -92,7 +92,7 @@ class NeonDatabase implements Database {
     return rows[0] ? Subscriber.from(rows[0]) : null;
   }
 
-  async readActiveSubscribersByTag(tag: BlogPostTag) {
+  async readByTag(tag: BlogPostTag) {
     const rows = await this.readActiveRowsByTag(tag);
     return rows.map(Subscriber.from);
   }
@@ -117,7 +117,7 @@ class NeonDatabase implements Database {
     }
   }
 
-  async createPendingSubscriber({
+  async createPending({
     email,
     token,
     tokenCreatedAt,
@@ -128,7 +128,7 @@ class NeonDatabase implements Database {
 		`;
   }
 
-  async updatePendingSubscriber({
+  async updatePending({
     email,
     token,
     tokenCreatedAt,
@@ -155,16 +155,17 @@ class NeonDatabase implements Database {
     wantsProjects,
     wantsThoughts,
   }: PreferencesInput) {
+    const nullName = name || null;
     await this.sql`
 			UPDATE subscribers
-			SET name = ${name},
+			SET name = ${nullName},
 				wants_projects = ${wantsProjects},
 				wants_thoughts = ${wantsThoughts}
 			WHERE token = ${token}
 		`;
   }
 
-  async deleteSubscriberByToken(token: string) {
+  async deleteByToken(token: string) {
     await this.sql`
 			DELETE FROM subscribers
 			WHERE token = ${token}
@@ -180,27 +181,27 @@ class NeonDatabase implements Database {
   }
 }
 
-class FakeDatabase implements Database {
-  async readSubscriberByEmail(email: string) {
+class FakeDatabase implements SubscriberStore {
+  async readByEmail(email: string) {
     console.log("FakeDatabase.readSubscriberByEmail", { email });
     return null;
   }
 
-  async readSubscriberByToken(token: string) {
+  async readByToken(token: string) {
     console.log("FakeDatabase.readSubscriberByToken", { token });
     return null;
   }
 
-  async readActiveSubscribersByTag(tag: BlogPostTag) {
+  async readByTag(tag: BlogPostTag) {
     console.log("FakeDatabase.readActiveSubscribersByTag", { tag });
     return [];
   }
 
-  async createPendingSubscriber(input: PendingSubscriberInput) {
+  async createPending(input: PendingSubscriberInput) {
     console.log("FakeDatabase.createPendingSubscriber", input);
   }
 
-  async updatePendingSubscriber(input: PendingSubscriberInput) {
+  async updatePending(input: PendingSubscriberInput) {
     console.log("FakeDatabase.updatePendingSubscriber", input);
   }
 
@@ -212,7 +213,7 @@ class FakeDatabase implements Database {
     console.log("FakeDatabase.updatePreferences", input);
   }
 
-  async deleteSubscriberByToken(token: string) {
+  async deleteByToken(token: string) {
     console.log("FakeDatabase.deleteSubscriberByToken", { token });
   }
 
@@ -223,6 +224,6 @@ class FakeDatabase implements Database {
 
 const connectionString = import.meta.env.NEON_DATABASE_URL;
 
-export const database: Database = connectionString
+export const subscriberStore: SubscriberStore = connectionString
   ? new NeonDatabase(connectionString)
   : new FakeDatabase();

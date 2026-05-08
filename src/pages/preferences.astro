@@ -46,7 +46,7 @@ if (Astro.request.method === "POST") {
 
 let subscriber = null;
 try {
-  subscriber = await subscriberService.readSubscriberByToken(token);
+  subscriber = await subscriberService.readByToken(token);
 } catch (error) {
   if (error instanceof InvalidTokenError) {
     title = "Invalid link";

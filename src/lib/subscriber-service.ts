@@ -1,24 +1,32 @@
 import { randomBytes } from "node:crypto";
 
-import { database, type Database, type Subscriber } from "./database";
+import { subscriberStore, type SubscriberStore, type Subscriber } from "./database";
 import { emailer, type Emailer } from "./email";
 import { renderPost } from "./render-post";
 import type { Post } from "./posts";
 
 export class SubscriberService {
   constructor(
-    private readonly database: Database,
+    private readonly store: SubscriberStore,
     private readonly emailer: Emailer,
-  ) {}
+  ) { }
 
-  async createPendingSubscriber(email: string, origin: URL) {
+  /**
+   * Creates a pending subscriber and sends a confirmation email.
+   *
+   * If a pending subscriber already exists, another email is sent unless the
+   * last one was sent within the last five minutes.
+   *
+   * If an active subscriber already exists, nothing happens.
+   */
+  async create(email: string, origin: URL) {
     const normalizedEmail = email.trim().toLowerCase();
     if (!normalizedEmail) {
       throw new InvalidEmailError();
     }
 
     const now = new Date();
-    const existing = await this.database.readSubscriberByEmail(normalizedEmail);
+    const existing = await this.store.readByEmail(normalizedEmail);
     if (existing) {
       if (existing.active) {
         // Don't resend confirmations to active subscribers.
@@ -28,6 +36,7 @@ export class SubscriberService {
         );
         return;
       }
+
       if (!existing.canSendEmail(now)) {
         // Don't spam pending subscribers.
         console.log(
@@ -35,6 +44,16 @@ export class SubscriberService {
           existing.email,
           "who last received email at",
           existing.lastEmailSentAt,
+        );
+        return;
+      }
+
+      if (existing.tokenCreatedAt && !tokenExpired(existing.tokenCreatedAt, now)) {
+        console.log(
+          "Refusing to rotate fresh confirmation token for",
+          existing.email,
+          "created at",
+          existing.tokenCreatedAt,
         );
         return;
       }
@@ -46,9 +65,9 @@ export class SubscriberService {
       tokenCreatedAt: now,
     };
     if (existing) {
-      await this.database.updatePendingSubscriber(input);
+      await this.store.updatePending(input);
     } else {
-      await this.database.createPendingSubscriber(input);
+      await this.store.createPending(input);
     }
     const confirmationUrl = new URL("/subscribe", origin);
     confirmationUrl.searchParams.set("t", token);
@@ -56,19 +75,19 @@ export class SubscriberService {
       normalizedEmail,
       confirmationUrl.toString(),
     );
-    await this.database.updateLastEmailSentAt(normalizedEmail, now);
+    await this.store.updateLastEmailSentAt(normalizedEmail, now);
   }
 
   async confirm(token: string): Promise<void> {
-    await this.readSubscriberByToken(token);
-    await this.database.updateActive(token);
+    await this.readByToken(token);
+    await this.store.updateActive(token);
   }
 
-  async readSubscriberByToken(token: string): Promise<Subscriber> {
+  async readByToken(token: string): Promise<Subscriber> {
     if (!token) {
       throw new InvalidTokenError();
     }
-    const subscriber = await this.database.readSubscriberByToken(token);
+    const subscriber = await this.store.readByToken(token);
     if (!subscriber) {
       throw new InvalidTokenError();
     }
@@ -79,25 +98,25 @@ export class SubscriberService {
     token: string,
     input: { name: string; wantsProjects: boolean; wantsThoughts: boolean },
   ): Promise<void> {
-    await this.readSubscriberByToken(token);
+    await this.readByToken(token);
     const name = input.name.trim();
-    await this.database.updatePreferences({
+    await this.store.updatePreferences({
       token,
-      name: name || null,
+      ...(name ? { name } : {}),
       wantsProjects: input.wantsProjects,
       wantsThoughts: input.wantsThoughts,
     });
   }
 
   async unsubscribe(token: string): Promise<void> {
-    await this.readSubscriberByToken(token);
-    await this.database.deleteSubscriberByToken(token);
+    await this.readByToken(token);
+    await this.store.deleteByToken(token);
   }
 
   async sendPost(post: Post, site: URL) {
     const postUrl = new URL(post.url, site).toString();
     const contentHtml = renderPost(post);
-    const subscribers = await this.database.readActiveSubscribersByTag(
+    const subscribers = await this.store.readByTag(
       post.tag,
     );
     let sentCount = 0;
@@ -144,8 +163,13 @@ function generateToken() {
   return randomBytes(32).toString("base64url");
 }
 
-export class InvalidEmailError extends Error {}
+function tokenExpired(tokenCreatedAt: Date, now: Date) {
+  const fiveMinutes = 5 * 60 * 1000;
+  return now.getTime() - tokenCreatedAt.getTime() >= fiveMinutes;
+}
 
-export class InvalidTokenError extends Error {}
+export class InvalidEmailError extends Error { }
 
-export const subscriberService = new SubscriberService(database, emailer);
+export class InvalidTokenError extends Error { }
+
+export const subscriberService = new SubscriberService(subscriberStore, emailer);
