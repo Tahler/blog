@@ -1,14 +1,14 @@
 import { randomBytes } from "node:crypto";
 
 import { subscriberStore, type SubscriberStore, type Subscriber } from "./subscriber-store";
-import { emailer, type Emailer } from "./email";
+import { emailer, type SubscriberEmailer } from "./email";
 import { renderPost } from "./render-post";
 import type { Post } from "./posts";
 
 export class SubscriberService {
   constructor(
     private readonly store: SubscriberStore,
-    private readonly emailer: Emailer,
+    private readonly emailer: SubscriberEmailer,
   ) { }
 
   /**

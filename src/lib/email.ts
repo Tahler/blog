@@ -1,11 +1,27 @@
 import { Resend } from "resend";
 
 export interface Emailer {
-  sendConfirmation(toEmail: string, confirmationUrl: string): Promise<void>;
-  sendPost(input: PostInput): Promise<void>;
+  send(message: Message): Promise<void>;
 }
 
-export interface PostInput {
+export interface Message {
+  to: string;
+  subject: string;
+  html: string;
+}
+
+class ResendEmailer implements Emailer {
+  constructor(
+    private readonly client: Resend,
+    private readonly from: string,
+  ) {}
+
+  async send(message: Message) {
+    await this.client.emails.send({ ...message, from: this.from });
+  }
+}
+
+export interface SubscriberPostInput {
   toEmail: string;
   subject: string;
   contentHtml: string;
@@ -14,15 +30,11 @@ export interface PostInput {
   unsubscribeUrl: string;
 }
 
-class ResendEmailer implements Emailer {
-  constructor(
-    private readonly fromEmail: string,
-    private readonly client: Resend,
-  ) {}
+export class SubscriberEmailer {
+  constructor(private readonly emailer: Emailer) {}
 
   async sendConfirmation(toEmail: string, confirmationUrl: string) {
-    await this.client.emails.send({
-      from: this.fromEmail,
+    await this.emailer.send({
       to: toEmail,
       subject: "You're almost subscribed",
       html: `
@@ -43,9 +55,8 @@ class ResendEmailer implements Emailer {
     });
   }
 
-  async sendPost(input: PostInput) {
-    await this.client.emails.send({
-      from: this.fromEmail,
+  async sendPost(input: SubscriberPostInput) {
+    await this.emailer.send({
       to: input.toEmail,
       subject: input.subject,
       html: `
@@ -60,28 +71,29 @@ class ResendEmailer implements Emailer {
   }
 }
 
-class FakeEmailer implements Emailer {
-  async sendConfirmation(toEmail: string, confirmationUrl: string) {
-    console.log("FakeEmailer.sendConfirmation", { toEmail, confirmationUrl });
-  }
+export class FakeEmailer implements Emailer {
+  sent: Message[] = [];
 
-  async sendPost(input: PostInput) {
-    console.log("FakeEmailer.sendPost", input);
+  async send(message: Message) {
+    this.sent.push(message);
+    console.log("FakeEmailer.send", message);
   }
 }
 
-function createEmailer(): Emailer {
+function createEmailer(): SubscriberEmailer {
   const resendApiKey = import.meta.env.RESEND_API_KEY;
   const fromEmail = import.meta.env.RESEND_FROM_EMAIL;
   if (resendApiKey && fromEmail) {
-    return new ResendEmailer(fromEmail, new Resend(resendApiKey));
+    return new SubscriberEmailer(
+      new ResendEmailer(new Resend(resendApiKey), fromEmail),
+    );
   }
 
   console.log("Missing email env vars for Resend email delivery", {
     RESEND_API_KEY: !!resendApiKey,
     RESEND_FROM_EMAIL: !!fromEmail,
   });
-  return new FakeEmailer();
+  return new SubscriberEmailer(new FakeEmailer());
 }
 
 export const emailer = createEmailer();
