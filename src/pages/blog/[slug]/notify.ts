@@ -2,12 +2,11 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 
-import { getEnv } from "../../../lib/env";
 import { getPostBySlug } from "../../../lib/posts";
 import { subscriberService } from "../../../lib/subscriber-service";
 
 export const POST: APIRoute = async ({ params, request, site }) => {
-  const secret = getEnv("NOTIFY_API_SECRET");
+  const secret = import.meta.env.NOTIFY_API_SECRET;
   if (!secret) {
     return Response.json(
       { error: "Server is not configured for notifications." },

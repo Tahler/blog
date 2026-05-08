@@ -1,7 +1,5 @@
 import { neon } from "@neondatabase/serverless";
 
-import { getEnv } from "./env";
-
 export interface Database {
   readSubscriberByEmail(email: string): Promise<Subscriber | null>;
   readSubscriberByToken(token: string): Promise<Subscriber | null>;
@@ -68,7 +66,11 @@ export class Subscriber {
   }
 }
 class NeonDatabase implements Database {
-  constructor(private readonly sql = neon(getEnv("NEON_DATABASE_URL")!)) {}
+  private readonly sql;
+
+  constructor(connectionString: string) {
+    this.sql = neon(connectionString);
+  }
 
   async readSubscriberByEmail(email: string) {
     const rows = await this.sql`
@@ -219,8 +221,8 @@ class FakeDatabase implements Database {
   }
 }
 
-const connectionString = getEnv("NEON_DATABASE_URL");
+const connectionString = import.meta.env.NEON_DATABASE_URL;
 
 export const database: Database = connectionString
-  ? new NeonDatabase()
+  ? new NeonDatabase(connectionString)
   : new FakeDatabase();

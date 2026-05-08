@@ -1,7 +1,5 @@
 import { Resend } from "resend";
 
-import { getEnv } from "./env";
-
 export interface Emailer {
   sendConfirmation(toEmail: string, confirmationUrl: string): Promise<void>;
   sendPost(input: PostInput): Promise<void>;
@@ -71,8 +69,8 @@ class FakeEmailer implements Emailer {
 }
 
 function createEmailer(): Emailer {
-  const resendApiKey = getEnv("RESEND_API_KEY");
-  const fromEmail = getEnv("RESEND_FROM_EMAIL");
+  const resendApiKey = import.meta.env.RESEND_API_KEY;
+  const fromEmail = import.meta.env.RESEND_FROM_EMAIL;
   if (resendApiKey && fromEmail) {
     return new ResendEmailer(fromEmail, new Resend(resendApiKey));
   }
