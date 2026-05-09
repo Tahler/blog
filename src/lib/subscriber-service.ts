@@ -12,10 +12,16 @@ import type { Post } from "./posts";
 export class SubscriberService {
   private readonly store: SubscriberStore;
   private readonly emailer: SubscriberEmailer;
+  private readonly now: () => Date;
 
-  constructor(store: SubscriberStore, emailer: Emailer) {
+  constructor(
+    store: SubscriberStore,
+    emailer: Emailer,
+    now = () => new Date(),
+  ) {
     this.store = store;
     this.emailer = new SubscriberEmailer(emailer);
+    this.now = now;
   }
 
   /**
@@ -32,7 +38,7 @@ export class SubscriberService {
       throw new InvalidEmailError();
     }
 
-    const now = new Date();
+    const now = this.now();
     const existing = await this.store.readByEmail(normalizedEmail);
     if (existing) {
       if (existing.active) {
