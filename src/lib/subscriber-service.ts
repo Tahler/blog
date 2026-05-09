@@ -135,7 +135,7 @@ export class SubscriberService {
 
       try {
         await this.emailer.sendPost({
-          toEmail: subscriber.email,
+          to: subscriber,
           subject: post.title,
           contentHtml,
           postUrl,
@@ -167,7 +167,7 @@ export class InvalidEmailError extends Error {}
 export class InvalidTokenError extends Error {}
 
 interface SubscriberPostInput {
-  toEmail: string;
+  to: Recipient;
   subject: string;
   contentHtml: string;
   postUrl: string;
@@ -178,18 +178,18 @@ interface SubscriberPostInput {
 class SubscriberEmailer {
   constructor(private readonly emailer: Emailer) {}
 
-  async sendConfirmation(toEmail: string, confirmationUrl: string) {
-    await this.emailer.send({
-      to: toEmail,
-      subject: "You're almost subscribed",
-      html: `
+  async sendConfirmation(email: string, confirmationUrl: string) {
+    await this.send(
+      { email },
+      "You're almost subscribed",
+      `
         <div style="font-family: sans-serif; line-height: 1.5; color: #111;">
           <p>You're almost subscribed!</p>
           <p>Just click the link below to receive future posts in your inbox.</p>
           <p>
             <a
-              href="${confirmationUrl}"
-              style="display: inline-block; padding: 12px 16px; border-radius: 6px; background: #0f766e; color: #fff; text-decoration: none; font-weight: 600;"
+                href="${confirmationUrl}"
+                style="display: inline-block; padding: 12px 16px; border-radius: 6px; background: #0f766e; color: #fff; text-decoration: none; font-weight: 600;"
             >
               Confirm subscription
             </a>
@@ -197,14 +197,14 @@ class SubscriberEmailer {
           <p>Don't want to subscribe? Feel free to ignore this email.</p>
         </div>
       `,
-    });
+    );
   }
 
   async sendPost(input: SubscriberPostInput) {
-    await this.emailer.send({
-      to: input.toEmail,
-      subject: input.subject,
-      html: `
+    await this.send(
+      input.to,
+      input.subject,
+      `
         <div style="font-family: sans-serif; line-height: 1.5; color: #111;">
           ${input.contentHtml}
           <p><a href="${input.postUrl}">Read on the web</a></p>
@@ -212,8 +212,18 @@ class SubscriberEmailer {
           <p><a href="${input.unsubscribeUrl}">Unsubscribe</a></p>
         </div>
       `,
-    });
+    );
   }
+
+  private async send(to: Recipient, subject: string, html: string) {
+    const toEmail = to.name ? `${to.name} <${to.email}>` : to.email;
+    await this.emailer.send({ to: toEmail, subject, html });
+  }
+}
+
+interface Recipient {
+  email: string;
+  name?: string | null;
 }
 
 export const subscriberService = new SubscriberService(
