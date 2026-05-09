@@ -10,6 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "test": "vitest run",
     "db:generate": "drizzle-kit generate --dialect=postgresql --schema=./db/schema.ts --out=./db",
     "db:migrate": "tsx ./db/migrate.ts"
   },
@@ -33,6 +34,7 @@
     "drizzle-kit": "^0.31.10",
     "prettier": "^3.6.2",
     "prettier-plugin-astro": "^0.14.1",
-    "tsx": "^4.20.6"
+    "tsx": "^4.20.6",
+    "vitest": "^3.2.4"
   }
 }
