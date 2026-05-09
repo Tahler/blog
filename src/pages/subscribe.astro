@@ -2,7 +2,6 @@
 export const prerender = false;
 
 import BaseHead from "../components/BaseHead.astro";
-import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import { SITE_TITLE } from "../consts";
 import {
@@ -66,6 +65,5 @@ if (Astro.request.method === "GET") {
       <p>{message}</p>
       <p><a href="/">Back home</a></p>
     </main>
-    <Footer />
   </body>
 </html>
