@@ -1,15 +1,22 @@
 import { randomBytes } from "node:crypto";
 
-import { subscriberStore, type SubscriberStore, type Subscriber } from "./subscriber-store";
-import { emailer, type SubscriberEmailer } from "./email";
+import {
+  subscriberStore,
+  type SubscriberStore,
+  type Subscriber,
+} from "./subscriber-store";
+import { emailer, type Emailer } from "./email";
 import { renderPost } from "./render-post";
 import type { Post } from "./posts";
 
 export class SubscriberService {
-  constructor(
-    private readonly store: SubscriberStore,
-    private readonly emailer: SubscriberEmailer,
-  ) { }
+  private readonly store: SubscriberStore;
+  private readonly emailer: SubscriberEmailer;
+
+  constructor(store: SubscriberStore, emailer: Emailer) {
+    this.store = store;
+    this.emailer = new SubscriberEmailer(emailer);
+  }
 
   /**
    * Creates a pending subscriber and sends a confirmation email.
@@ -104,9 +111,7 @@ export class SubscriberService {
   async sendPost(post: Post, site: URL) {
     const postUrl = new URL(post.url, site).toString();
     const contentHtml = renderPost(post);
-    const subscribers = await this.store.readByTag(
-      post.tag,
-    );
+    const subscribers = await this.store.readByTag(post.tag);
     let sentCount = 0;
     const errorsByEmail: Record<string, string> = {};
 
@@ -151,8 +156,61 @@ function generateToken() {
   return randomBytes(32).toString("base64url");
 }
 
-export class InvalidEmailError extends Error { }
+export class InvalidEmailError extends Error {}
 
-export class InvalidTokenError extends Error { }
+export class InvalidTokenError extends Error {}
 
-export const subscriberService = new SubscriberService(subscriberStore, emailer);
+interface SubscriberPostInput {
+  toEmail: string;
+  subject: string;
+  contentHtml: string;
+  postUrl: string;
+  preferencesUrl: string;
+  unsubscribeUrl: string;
+}
+
+class SubscriberEmailer {
+  constructor(private readonly emailer: Emailer) {}
+
+  async sendConfirmation(toEmail: string, confirmationUrl: string) {
+    await this.emailer.send({
+      to: toEmail,
+      subject: "You're almost subscribed",
+      html: `
+        <div style="font-family: sans-serif; line-height: 1.5; color: #111;">
+          <p>You're almost subscribed!</p>
+          <p>Just click the link below to receive future posts in your inbox.</p>
+          <p>
+            <a
+              href="${confirmationUrl}"
+              style="display: inline-block; padding: 12px 16px; border-radius: 6px; background: #0f766e; color: #fff; text-decoration: none; font-weight: 600;"
+            >
+              Confirm subscription
+            </a>
+          </p>
+          <p>Don't want to subscribe? Feel free to ignore this email.</p>
+        </div>
+      `,
+    });
+  }
+
+  async sendPost(input: SubscriberPostInput) {
+    await this.emailer.send({
+      to: input.toEmail,
+      subject: input.subject,
+      html: `
+        <div style="font-family: sans-serif; line-height: 1.5; color: #111;">
+          ${input.contentHtml}
+          <p><a href="${input.postUrl}">Read on the web</a></p>
+          <p><a href="${input.preferencesUrl}">Manage preferences</a></p>
+          <p><a href="${input.unsubscribeUrl}">Unsubscribe</a></p>
+        </div>
+      `,
+    });
+  }
+}
+
+export const subscriberService = new SubscriberService(
+  subscriberStore,
+  emailer,
+);
