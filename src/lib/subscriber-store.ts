@@ -27,16 +27,16 @@ export interface PreferencesInput {
 
 export class Subscriber {
   constructor(
-    readonly id: number,
-    readonly createdAt: Date,
-    readonly email: string,
-    readonly name: string | null,
-    readonly active: boolean,
-    readonly token: string | null,
-    readonly lastEmailSentAt: Date | null,
-    readonly wantsProjects: boolean,
-    readonly wantsThoughts: boolean,
-  ) { }
+    public id: number,
+    public createdAt: Date,
+    public email: string,
+    public name: string | null,
+    public active: boolean,
+    public token: string | null,
+    public lastEmailSentAt: Date | null,
+    public wantsProjects: boolean,
+    public wantsThoughts: boolean,
+  ) {}
 
   canSendEmail(now = new Date()) {
     if (!this.lastEmailSentAt) {
@@ -61,7 +61,9 @@ export class Subscriber {
     );
   }
 
-  static build(overrides: Partial<Subscriber> & Pick<Subscriber, "email">): Subscriber {
+  static build(
+    overrides: Partial<Subscriber> & Pick<Subscriber, "email">,
+  ): Subscriber {
     return new Subscriber(
       overrides.id ?? 1,
       overrides.createdAt ?? new Date("2026-05-01T00:00:00Z"),
@@ -74,8 +76,8 @@ export class Subscriber {
       overrides.wantsThoughts ?? true,
     );
   }
-
 }
+
 class NeonDatabase implements SubscriberStore {
   private readonly sql;
 
@@ -128,10 +130,7 @@ class NeonDatabase implements SubscriberStore {
     }
   }
 
-  async create({
-    email,
-    token,
-  }: PendingSubscriberInput) {
+  async create({ email, token }: PendingSubscriberInput) {
     await this.sql`
 			INSERT INTO subscribers (email, active, token)
 			VALUES (${email}, false, ${token})
@@ -178,40 +177,70 @@ class NeonDatabase implements SubscriberStore {
   }
 }
 
-class FakeSubscriberStore implements SubscriberStore {
+export class FakeSubscriberStore implements SubscriberStore {
+  constructor(public subscribers: Subscriber[] = []) {}
+
   async readByEmail(email: string) {
-    console.log("FakeSubscriberStore.readSubscriberByEmail", { email });
-    return null;
+    return this.subscribers.find((s) => s.email === email) ?? null;
   }
 
   async readByToken(token: string) {
-    console.log("FakeSubscriberStore.readSubscriberByToken", { token });
-    return null;
+    return this.subscribers.find((s) => s.token === token) ?? null;
   }
 
   async readByTag(tag: BlogPostTag) {
-    console.log("FakeSubscriberStore.readActiveSubscribersByTag", { tag });
-    return [];
+    const predicates: { [k in BlogPostTag]: (s: Subscriber) => boolean } = {
+      projects: (s) => s.wantsProjects === true,
+      thoughts: (s) => s.wantsThoughts === true,
+    };
+    const predicate = predicates[tag];
+    return this.subscribers.filter(predicate) ?? null;
   }
 
   async create(input: PendingSubscriberInput) {
-    console.log("FakeSubscriberStore.createPendingSubscriber", input);
+    this.subscribers.push(
+      Subscriber.build({
+        email: input.email,
+        active: false,
+        token: input.token,
+      }),
+    );
   }
 
   async updateLastEmailSentAt(email: string, sentAt: Date) {
-    console.log("FakeSubscriberStore.updateLastEmailSentAt", { email, sentAt });
+    const subscriber = await this.readByEmail(email);
+    if (!subscriber) {
+      return;
+    }
+    subscriber.lastEmailSentAt = sentAt;
   }
 
   async updateActive(token: string) {
-    console.log("FakeSubscriberStore.updateActive", { token });
+    const subscriber = await this.readByToken(token);
+    if (!subscriber) {
+      return;
+    }
+    subscriber.active = true;
   }
 
   async updatePreferences(input: PreferencesInput) {
-    console.log("FakeSubscriberStore.updatePreferences", input);
+    const subscriber = await this.readByToken(input.token);
+    if (!subscriber) {
+      return;
+    }
+    subscriber.name = input.name || null;
+    subscriber.wantsProjects = input.wantsProjects;
+    subscriber.wantsThoughts = input.wantsThoughts;
   }
 
   async deleteByToken(token: string) {
-    console.log("FakeSubscriberStore.deleteSubscriberByToken", { token });
+    const index = this.subscribers.findIndex(
+      (subscriber) => subscriber.token === token,
+    );
+    if (index === -1) {
+      return;
+    }
+    this.subscribers.splice(index, 1);
   }
 }
 
