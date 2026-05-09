@@ -14,9 +14,11 @@ npm install
 
 ```dotenv
 NEON_DATABASE_URL=postgres://...
+RESEND_API_KEY=...
+RESEND_FROM_EMAIL=noreply@bertyl.com
 ```
 
-NOTE: If `NEON_DATABASE_URL` is unset, the app falls back to a fake that logs subscriptions instead of writing to a database.
+NOTE: If these are unset, the app falls back to a fake, local database and emailer.
 
 3. Create and run migrations:
 
@@ -86,7 +88,7 @@ The app sends at most one subscription-related email per subscriber every 5 minu
 ### New post
 
 1. Commit new post to `main`: `src/content/blog/YYYY-MM-DD_foo.md`
-1. Manually triggered GitHub Action sends emails to anyone in `subscribers(active=true, {post_tag}=true)`
+1. Manually triggered GitHub Action sends emails to anyone in `subscribers(active=true, {post_tag}=true)` by calling the protected `/blog/{slug}/notify` endpoint
 
 ### Manage preferences
 
