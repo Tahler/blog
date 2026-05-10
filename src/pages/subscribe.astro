@@ -2,7 +2,7 @@
 export const prerender = false;
 
 import BaseHead from "../components/BaseHead.astro";
-import Header from "../components/Header.astro";
+import Nav from "../components/Nav.astro";
 import { SITE_TITLE } from "../consts";
 import {
   InvalidTokenError,
@@ -59,7 +59,7 @@ if (Astro.request.method === "GET") {
     <BaseHead title={`${title} | ${SITE_TITLE}`} description={message} />
   </head>
   <body>
-    <Header />
+    <Nav />
     <main>
       <h1>{title}</h1>
       <p>{message}</p>
