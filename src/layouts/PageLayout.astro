@@ -1,5 +1,6 @@
 ---
 import Nav from "../components/Nav.astro";
+import { SITE_TITLE } from "../consts";
 import BaseLayout from "./BaseLayout.astro";
 
 interface Props {
@@ -12,8 +13,44 @@ const { title } = Astro.props;
 
 <BaseLayout {...Astro.props}>
   <header>
-    <h1>{title}</h1>
+    <div class="breadcrumbs">
+      <a href="/" class="breadcrumb">{SITE_TITLE}</a> / <p class="breadcrumb">
+        {title}
+      </p>
+    </div>
     <Nav />
   </header>
   <slot />
 </BaseLayout>
+
+<style>
+  body {
+    margin: 0 auto;
+    width: var(--wrap-normal);
+    max-width: var(--wrap-wide);
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .breadcrumb {
+    margin: 0;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+    color: inherit;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-action);
+    }
+
+    &:active {
+      background: var(--color-selection);
+    }
+  }
+</style>

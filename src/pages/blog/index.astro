@@ -1,13 +1,13 @@
 ---
 import FormattedDate from "../../components/FormattedDate.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
+import { SITE_DESCRIPTION } from "../../consts";
 import PageLayout from "../../layouts/PageLayout.astro";
 import { getSortedPosts } from "../../lib/posts";
 
 const posts = await getSortedPosts();
 ---
 
-<PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+<PageLayout title="Blog" description={SITE_DESCRIPTION}>
   <main>
     <ul>
       {
