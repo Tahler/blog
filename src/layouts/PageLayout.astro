@@ -1,0 +1,19 @@
+---
+import Nav from "../components/Nav.astro";
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  image?: ImageMetadata;
+}
+const { title } = Astro.props;
+---
+
+<BaseLayout {...Astro.props}>
+  <header>
+    <h1>{title}</h1>
+    <Nav />
+  </header>
+  <slot />
+</BaseLayout>

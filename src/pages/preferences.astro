@@ -1,8 +1,7 @@
 ---
 export const prerender = false;
 
-import Nav from "../components/Nav.astro";
-import BaseLayout from "../layouts/BaseLayout.astro";
+import PageLayout from "../layouts/PageLayout.astro";
 import {
   InvalidTokenError,
   subscriberService,
@@ -70,8 +69,7 @@ const wantsProjects = subscriber?.wantsProjects ?? false;
 const wantsThoughts = subscriber?.wantsThoughts ?? false;
 ---
 
-<BaseLayout title={title} description={message}>
-  <Nav />
+<PageLayout title={title} description={message}>
   <main>
     <h1>{title}</h1>
     <p>{message}</p>
@@ -120,4 +118,4 @@ const wantsThoughts = subscriber?.wantsThoughts ?? false;
       )
     }
   </main>
-</BaseLayout>
+</PageLayout>

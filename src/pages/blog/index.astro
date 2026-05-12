@@ -1,34 +1,30 @@
 ---
 import FormattedDate from "../../components/FormattedDate.astro";
-import Nav from "../../components/Nav.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageLayout from "../../layouts/PageLayout.astro";
 import { getSortedPosts } from "../../lib/posts";
 
 const posts = await getSortedPosts();
 ---
 
-<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-  <Nav />
+<PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <main>
-    <section>
-      <ul>
-        {
-          posts.map((post) => (
-            <li>
-              <a href={post.url}>
-                <h4 class="title">{post.title}</h4>
-                <p class="date">
-                  <FormattedDate date={post.date} />
-                </p>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </section>
+    <ul>
+      {
+        posts.map((post) => (
+          <li>
+            <a href={post.url}>
+              <h4 class="title">{post.title}</h4>
+              <p class="date">
+                <FormattedDate date={post.date} />
+              </p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </main>
-</BaseLayout>
+</PageLayout>
 
 <style>
   main {
