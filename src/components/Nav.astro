@@ -3,16 +3,16 @@
 ---
 
 <nav>
-  <a href="/about" id="about-link" class="item">About</a>
-  <a href="/blog" id="blog-link" class="item">Blog</a>
-  <a href="/contact" id="contact-link" class="item">Contact</a>
+  <a href="/about" id="about-link" class="item">[a]bout</a>
+  <a href="/blog" id="blog-link" class="item">[b]log</a>
+  <a href="/contact" id="contact-link" class="item">[c]ontact</a>
   <button
     id="theme-toggle"
     type="button"
     aria-label="Toggle color theme"
     class="item"
   >
-    Dark
+    [d]ark
   </button>
 </nav>
 
@@ -102,7 +102,7 @@
 
   .item {
     font: inherit;
-    color: inherit;
+    color: var(--color-tx-muted);
     background: transparent;
     text-decoration: none;
     margin: 0;
