@@ -39,7 +39,7 @@ export const POST: APIRoute = async ({ params, request, site }) => {
   const result = await subscriberService.sendPost(post, site);
   return Response.json({
     title: result.post.title,
-    recipientCount: result.sentCount,
+    subscriberCount: result.subscriberCount,
     sentCount: result.sentCount,
     errorsByEmail: result.errorsByEmail,
   });
