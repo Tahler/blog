@@ -23,4 +23,5 @@ jobs:
             --silent \
             -X POST \
             -H "Authorization: Bearer ${NOTIFY_API_SECRET}" \
+            -H "Origin: https://www.bertyl.com" \
             "${NOTIFY_URL}"
