@@ -3,16 +3,22 @@
 ---
 
 <nav>
-  <a href="/about" id="about-link" class="item">[a]bout</a>
-  <a href="/blog" id="blog-link" class="item">[b]log</a>
-  <a href="/contact" id="contact-link" class="item">[c]ontact</a>
+  <a href="/about" id="about-link" class="item">
+    <span class="hotkey">a</span>bout
+  </a>
+  <a href="/blog" id="blog-link" class="item">
+    <span class="hotkey">b</span>log
+  </a>
+  <a href="/contact" id="contact-link" class="item">
+    <span class="hotkey">c</span>ontact
+  </a>
   <button
     id="theme-toggle"
     type="button"
     aria-label="Toggle color theme"
     class="item"
   >
-    [d]ark
+    <span class="hotkey">d</span>ark
   </button>
 </nav>
 
@@ -118,5 +124,27 @@
     &:active {
       background: var(--color-selection);
     }
+  }
+
+  .hotkey::before {
+    content: "[";
+  }
+
+  .hotkey::after {
+    content: "]";
+  }
+
+  .hotkey::before,
+  .hotkey::after {
+    color: var(--color-tx-faint);
+    font-family: monospace;
+    position: relative;
+    top: 0.04rem;
+  }
+
+  .hotkey::before,
+  .hotkey,
+  .hotkey::after {
+    letter-spacing: -0.18rem;
   }
 </style>
