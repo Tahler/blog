@@ -1,10 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Nav from "../components/Nav.astro";
-import { SITE_TITLE } from "../consts";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 ---
 
-<BaseLayout>
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <main>
     <h1>{SITE_TITLE}</h1>
     <p>Subscribe to stay in touch and receive notifications for new posts.</p>

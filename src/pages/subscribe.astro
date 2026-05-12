@@ -1,9 +1,8 @@
 ---
 export const prerender = false;
 
-import BaseHead from "../components/BaseHead.astro";
 import Nav from "../components/Nav.astro";
-import { SITE_TITLE } from "../consts";
+import BaseLayout from "../layouts/BaseLayout.astro";
 import {
   InvalidTokenError,
   subscriberService,
@@ -53,17 +52,11 @@ if (Astro.request.method === "GET") {
 }
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={`${title} | ${SITE_TITLE}`} description={message} />
-  </head>
-  <body>
-    <Nav />
-    <main>
-      <h1>{title}</h1>
-      <p>{message}</p>
-      <p><a href="/">Back home</a></p>
-    </main>
-  </body>
-</html>
+<BaseLayout title={title} description={message}>
+  <Nav />
+  <main>
+    <h1>{title}</h1>
+    <p>{message}</p>
+    <p><a href="/">Back home</a></p>
+  </main>
+</BaseLayout>

@@ -1,9 +1,8 @@
 ---
 export const prerender = false;
 
-import BaseHead from "../components/BaseHead.astro";
 import Nav from "../components/Nav.astro";
-import { SITE_TITLE } from "../consts";
+import BaseLayout from "../layouts/BaseLayout.astro";
 import {
   InvalidTokenError,
   subscriberService,
@@ -56,35 +55,29 @@ if (!unsubscribed) {
 const email = subscriber?.email ?? "";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={`${title} | ${SITE_TITLE}`} description={message} />
-  </head>
-  <body>
-    <Nav />
-    <main>
-      <h1>{title}</h1>
-      <p>{message}</p>
-      {
-        subscriber ? (
-          <form method="post">
-            <p>
-              <label>
-                Email
-                <input type="email" value={email} disabled />
-              </label>
-            </p>
-            <p>
-              <button type="submit">Confirm unsubscribe</button>
-            </p>
-          </form>
-        ) : (
+<BaseLayout title={title} description={message}>
+  <Nav />
+  <main>
+    <h1>{title}</h1>
+    <p>{message}</p>
+    {
+      subscriber ? (
+        <form method="post">
           <p>
-            <a href="/">Back home</a>
+            <label>
+              Email
+              <input type="email" value={email} disabled />
+            </label>
           </p>
-        )
-      }
-    </main>
-  </body>
-</html>
+          <p>
+            <button type="submit">Confirm unsubscribe</button>
+          </p>
+        </form>
+      ) : (
+        <p>
+          <a href="/">Back home</a>
+        </p>
+      )
+    }
+  </main>
+</BaseLayout>

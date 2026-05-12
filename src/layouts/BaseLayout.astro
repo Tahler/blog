@@ -1,12 +1,17 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+
+interface Props {
+  title: string;
+  description: string;
+  image?: ImageMetadata;
+}
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <BaseHead {...Astro.props} />
 
     <script is:inline>
       function readStoredTheme(storageKey) {

@@ -1,79 +1,74 @@
 ---
-import BaseHead from "../../components/BaseHead.astro";
 import FormattedDate from "../../components/FormattedDate.astro";
 import Nav from "../../components/Nav.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getSortedPosts } from "../../lib/posts";
 
 const posts = await getSortedPosts();
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-    <style>
-      main {
-        width: 960px;
-      }
-      ul {
-        display: grid;
-        gap: 1rem;
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-      }
-      ul li * {
-        text-decoration: none;
-        transition: 0.2s ease;
-      }
-      ul li a {
-        display: block;
-        padding: 1rem 0;
-        border-bottom: 1px solid rgb(var(--gray-light));
-      }
-      .title {
-        margin: 0 0 0.35rem;
-        color: rgb(var(--black));
-        line-height: 1;
-      }
-      .date {
-        margin: 0 0 0.35rem;
-        color: rgb(var(--gray));
-      }
-      ul li a:hover h4,
-      ul li a:hover .date {
-        color: rgb(var(--accent));
-      }
-      @media (max-width: 720px) {
-        ul {
-          gap: 0.5em;
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <Nav />
+  <main>
+    <section>
+      <ul>
+        {
+          posts.map((post) => (
+            <li>
+              <a href={post.url}>
+                <h4 class="title">{post.title}</h4>
+                <p class="date">
+                  <FormattedDate date={post.date} />
+                </p>
+              </a>
+            </li>
+          ))
         }
-        ul li a {
-          padding: 0.75rem 0;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <Nav />
-    <main>
-      <section>
-        <ul>
-          {
-            posts.map((post) => (
-              <li>
-                <a href={post.url}>
-                  <h4 class="title">{post.title}</h4>
-                  <p class="date">
-                    <FormattedDate date={post.date} />
-                  </p>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </section>
-    </main>
-  </body>
-</html>
+      </ul>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    width: 960px;
+  }
+  ul {
+    display: grid;
+    gap: 1rem;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  ul li * {
+    text-decoration: none;
+    transition: 0.2s ease;
+  }
+  ul li a {
+    display: block;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgb(var(--gray-light));
+  }
+  .title {
+    margin: 0 0 0.35rem;
+    color: rgb(var(--black));
+    line-height: 1;
+  }
+  .date {
+    margin: 0 0 0.35rem;
+    color: rgb(var(--gray));
+  }
+  ul li a:hover h4,
+  ul li a:hover .date {
+    color: rgb(var(--accent));
+  }
+  @media (max-width: 720px) {
+    ul {
+      gap: 0.5em;
+    }
+    ul li a {
+      padding: 0.75rem 0;
+    }
+  }
+</style>
