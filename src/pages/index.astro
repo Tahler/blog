@@ -1,29 +1,134 @@
 ---
-import BaseHead from "../components/BaseHead.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 import Nav from "../components/Nav.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import { SITE_TITLE } from "../consts";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-  </head>
-  <body>
-    <Nav />
-    <main>
-      <h1>{SITE_TITLE}</h1>
-      <p>Subscribe to stay in touch and receive notifications for new posts.</p>
-      <form method="post" action="/subscribe">
-        <input
-          type="email"
-          name="email"
-          placeholder="me@gmail.com"
-          autocomplete="email"
-          required
-        />
-        <button type="submit">Subscribe</button>
-      </form>
-    </main>
-  </body>
-</html>
+<BaseLayout>
+  <main>
+    <h1>{SITE_TITLE}</h1>
+    <p>Subscribe to stay in touch and receive notifications for new posts.</p>
+    <form method="post" action="/subscribe">
+      <input
+        type="email"
+        name="email"
+        placeholder="me@gmail.com"
+        autocomplete="email"
+        required
+      />
+      <button type="submit">Subscribe</button>
+    </form>
+  </main>
+  <Nav />
+</BaseLayout>
+
+<style>
+  body {
+    box-sizing: border-box;
+    min-height: 100svh;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    letter-spacing: -0.01em;
+    color: var(--color-tx-normal);
+  }
+
+  p {
+    margin: 0;
+    max-width: 24rem;
+    color: var(--color-tx-muted);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  a {
+    color: var(--color-action);
+    text-decoration-color: transparent;
+    text-underline-offset: 0.15em;
+    transition: text-decoration-color 150ms ease;
+
+    &:hover,
+    &:focus {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  form {
+    width: min(100%, 24rem);
+    display: flex;
+
+    &:focus-within input {
+      border-color: var(--color-action);
+    }
+  }
+
+  input,
+  button {
+    font: inherit;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  input {
+    width: 0;
+    flex: auto;
+    padding: 0.8rem 1rem;
+
+    background: var(--color-bg-primary);
+    color: var(--color-tx-normal);
+    transition: border-color 150ms ease;
+
+    border: 1px solid var(--color-ui-normal);
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    border-right: none;
+
+    &::placeholder {
+      color: var(--color-tx-faint);
+    }
+
+    &:hover {
+      border-color: var(--color-ui-hover);
+    }
+
+    &:focus {
+      border-color: var(--color-action);
+    }
+  }
+
+  button {
+    flex: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    white-space: nowrap;
+    background: var(--color-tx-normal);
+    color: var(--color-bg-primary);
+    transition: background-color 150ms ease;
+
+    border: none;
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+
+    &:hover,
+    &:focus {
+      background: var(--color-action);
+    }
+  }
+</style>
