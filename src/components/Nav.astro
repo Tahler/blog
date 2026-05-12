@@ -1,29 +1,28 @@
 ---
-import HeaderLink from "./HeaderLink.astro";
+
 ---
 
 <nav>
-  <div class="internal-links">
-    <HeaderLink href="/about">About</HeaderLink>
-    <HeaderLink href="/blog">Blog</HeaderLink>
-    <HeaderLink href="/contact">Contact</HeaderLink>
-  </div>
+  <a href="/about" class="item">About</a>
+  <a href="/blog" class="item">Blog</a>
+  <a href="/contact" class="item">Contact</a>
 </nav>
 
 <style>
   nav {
+    margin: 1rem;
     display: flex;
-    align-items: center;
     justify-content: end;
+    gap: 1rem;
   }
-  nav a {
-    padding: 1em 0.5em;
-    color: var(--black);
-    border-bottom: 4px solid transparent;
+
+  .item {
+    color: inherit;
     text-decoration: none;
-  }
-  nav a.active {
-    text-decoration: none;
-    border-bottom-color: var(--accent);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-action);
+    }
   }
 </style>
