@@ -42,6 +42,25 @@
     );
   }
 
+  function addKeyTrigger(element, key) {
+    document.addEventListener("keydown", (event) => {
+      if (
+        isTypingTarget(event.target) ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey
+      ) {
+        return;
+      }
+      if (event.key.toLowerCase() !== key) {
+        return;
+      }
+      event.preventDefault();
+      element.click();
+    });
+  }
+
   function initializeThemeToggle() {
     const theme = window.__theme;
     const toggle = document.getElementById("theme-toggle");
@@ -54,22 +73,7 @@
       toggleTheme(theme, toggle);
     });
 
-    document.addEventListener("keydown", (event) => {
-      if (
-        isTypingTarget(event.target) ||
-        event.altKey ||
-        event.ctrlKey ||
-        event.metaKey ||
-        event.shiftKey
-      ) {
-        return;
-      }
-      if (event.key.toLowerCase() !== "d") {
-        return;
-      }
-      event.preventDefault();
-      toggleTheme(theme, toggle);
-    });
+    addKeyTrigger(toggle, "d");
 
     theme.mediaQuery.addEventListener("change", (event) => {
       if (theme.readStoredTheme()) {
