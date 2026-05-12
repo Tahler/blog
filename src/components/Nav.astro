@@ -6,7 +6,84 @@
   <a href="/about" class="item">About</a>
   <a href="/blog" class="item">Blog</a>
   <a href="/contact" class="item">Contact</a>
+  <button
+    id="theme-toggle"
+    type="button"
+    aria-label="Toggle color theme"
+    class="item"
+  >
+    Dark
+  </button>
 </nav>
+
+<script is:inline>
+  function syncThemeButton(theme, button) {
+    const activeTheme = theme.getTheme();
+    button.setAttribute("aria-pressed", String(activeTheme === "dark"));
+    button.setAttribute(
+      "aria-label",
+      `Switch to ${activeTheme === "dark" ? "light" : "dark"} mode`,
+    );
+  }
+
+  function toggleTheme(theme, button) {
+    const other = theme.getTheme() === "dark" ? "light" : "dark";
+    theme.setTheme(other);
+    syncThemeButton(theme, button);
+  }
+
+  function isTypingTarget(target) {
+    return (
+      target instanceof HTMLElement &&
+      (target.isContentEditable ||
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement)
+    );
+  }
+
+  function initializeThemeToggle() {
+    const theme = window.__theme;
+    const toggle = document.getElementById("theme-toggle");
+    if (!theme || !(toggle instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    syncThemeButton(theme, toggle);
+    toggle.addEventListener("click", () => {
+      toggleTheme(theme, toggle);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (
+        isTypingTarget(event.target) ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey
+      ) {
+        return;
+      }
+      if (event.key.toLowerCase() !== "d") {
+        return;
+      }
+      event.preventDefault();
+      toggleTheme(theme, toggle);
+    });
+
+    theme.mediaQuery.addEventListener("change", (event) => {
+      if (theme.readStoredTheme()) {
+        return;
+      }
+
+      const mode = event.matches ? "dark" : "light";
+      theme.applyTheme(mode);
+      syncThemeButton(theme, toggle);
+    });
+  }
+
+  initializeThemeToggle();
+</script>
 
 <style>
   nav {
@@ -17,8 +94,11 @@
   }
 
   .item {
+    font: inherit;
     color: inherit;
+    background: transparent;
     text-decoration: none;
+    border: 0;
 
     &:hover,
     &:focus-visible {

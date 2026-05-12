@@ -7,6 +7,65 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 <html lang="en">
   <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+
+    <script is:inline>
+      function readStoredTheme(storageKey) {
+        const theme = localStorage.getItem(storageKey);
+        if (theme === "light" || theme === "dark") {
+          return theme;
+        }
+        return null;
+      }
+
+      function getPreferredTheme(mediaQuery) {
+        if (mediaQuery.matches) {
+          return "dark";
+        }
+        return "light";
+      }
+
+      function applyTheme(root, theme) {
+        root.classList.remove("theme-light", "theme-dark");
+        root.classList.add(`theme-${theme}`);
+      }
+
+      function getTheme(storageKey, root, mediaQuery) {
+        const storedTheme = readStoredTheme(storageKey);
+        if (storedTheme) {
+          return storedTheme;
+        }
+        if (root.classList.contains("theme-dark")) {
+          return "dark";
+        }
+        if (root.classList.contains("theme-light")) {
+          return "light";
+        }
+        return getPreferredTheme(mediaQuery);
+      }
+
+      function setTheme(storageKey, root, theme) {
+        localStorage.setItem(storageKey, theme);
+        applyTheme(root, theme);
+      }
+
+      function initializeTheme() {
+        const storageKey = "theme";
+        const root = document.documentElement;
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+        window.__theme = {
+          applyTheme: (theme) => applyTheme(root, theme),
+          getTheme: () => getTheme(storageKey, root, mediaQuery),
+          mediaQuery,
+          readStoredTheme: () => readStoredTheme(storageKey),
+          setTheme: (theme) => setTheme(storageKey, root, theme),
+        };
+
+        applyTheme(root, getTheme(storageKey, root, mediaQuery));
+      }
+
+      initializeTheme();
+    </script>
   </head>
   <body>
     <slot />
