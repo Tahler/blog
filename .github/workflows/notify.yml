@@ -12,9 +12,9 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Call https://bertyl.com/blog/{slug}/notify
+      - name: Call https://www.bertyl.com/blog/{slug}/notify
         env:
-          NOTIFY_URL: https://bertyl.com/blog/${{ inputs.slug }}/notify
+          NOTIFY_URL: https://www.bertyl.com/blog/${{ inputs.slug }}/notify
           NOTIFY_API_SECRET: ${{ secrets.NOTIFY_API_SECRET }}
         run: |
           curl \
