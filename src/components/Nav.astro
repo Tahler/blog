@@ -98,11 +98,18 @@
     color: inherit;
     background: transparent;
     text-decoration: none;
+    margin: 0;
+    padding: 0.25rem 0.5rem;
     border: 0;
+    border-radius: 0.25rem;
 
     &:hover,
     &:focus-visible {
       color: var(--color-action);
+    }
+
+    &:active {
+      background: var(--color-selection);
     }
   }
 </style>
