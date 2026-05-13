@@ -4,13 +4,13 @@
 
 <nav>
   <a href="/about" id="about-link" class="item">
-    <span class="hotkey">a</span>bout
+    <kbd>A</kbd>bout
   </a>
   <a href="/blog" id="blog-link" class="item">
-    <span class="hotkey">b</span>log
+    <kbd>B</kbd>log
   </a>
   <a href="/contact" id="contact-link" class="item">
-    <span class="hotkey">c</span>ontact
+    <kbd>C</kbd>ontact
   </a>
   <button
     id="theme-toggle"
@@ -18,7 +18,7 @@
     aria-label="Toggle color theme"
     class="item"
   >
-    <span class="hotkey">d</span>ark
+    <kbd>D</kbd>ark
   </button>
 </nav>
 
@@ -109,6 +109,7 @@
   .item {
     font: inherit;
     color: var(--color-tx-muted);
+    cursor: pointer;
     background: transparent;
     text-decoration: none;
     margin: 0;
@@ -126,25 +127,11 @@
     }
   }
 
-  .hotkey::before {
-    content: "[";
-  }
-
-  .hotkey::after {
-    content: "]";
-  }
-
-  .hotkey::before,
-  .hotkey::after {
-    color: var(--color-tx-faint);
-    font-family: monospace;
-    position: relative;
-    top: 0.04rem;
-  }
-
-  .hotkey::before,
-  .hotkey,
-  .hotkey::after {
-    letter-spacing: -0.18rem;
+  kbd {
+    font-family: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--color-tx-faint);
+    text-decoration-thickness: 0;
+    text-underline-offset: 0.25em;
   }
 </style>
