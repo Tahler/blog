@@ -43,33 +43,22 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 
   h1 {
     margin: 0;
-    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-size: clamp(3.5rem, 10vw, 6rem);
+    line-height: 1;
     letter-spacing: -0.01em;
+    font-weight: 700;
     color: var(--color-tx-normal);
   }
 
   p {
     margin: 0;
-    max-width: 24rem;
     color: var(--color-tx-muted);
+    width: min(100%, 30rem);
     font-size: 1rem;
-    line-height: 1.5;
-  }
-
-  a {
-    color: var(--color-action);
-    text-decoration-color: transparent;
-    text-underline-offset: 0.15em;
-    transition: text-decoration-color 150ms ease;
-
-    &:hover,
-    &:focus {
-      text-decoration-color: currentColor;
-    }
   }
 
   form {
-    width: min(100%, 24rem);
+    width: min(100%, 30rem);
     display: flex;
 
     &:focus-within input {
@@ -91,7 +80,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
     flex: auto;
     padding: 0.8rem 1rem;
 
-    background: var(--color-bg-primary);
+    background: var(--color-bg-secondary);
     color: var(--color-tx-normal);
     transition: border-color 150ms ease;
 
