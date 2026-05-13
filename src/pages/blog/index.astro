@@ -44,20 +44,20 @@ const posts = await getSortedPosts();
   ul li a {
     display: block;
     padding: 1rem 0;
-    border-bottom: 1px solid rgb(var(--gray-light));
+    border-bottom: 1px solid var(--color-ui-normal);
   }
   .title {
     margin: 0 0 0.35rem;
-    color: rgb(var(--black));
+    color: var(--color-tx-normal);
     line-height: 1;
   }
   .date {
     margin: 0 0 0.35rem;
-    color: rgb(var(--gray));
+    color: var(--color-tx-muted);
   }
   ul li a:hover h4,
   ul li a:hover .date {
-    color: rgb(var(--accent));
+    color: var(--color-action);
   }
   @media (max-width: 720px) {
     ul {
