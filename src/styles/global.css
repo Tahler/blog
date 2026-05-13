@@ -295,6 +295,14 @@ code {
   background-color: var(--color-ui-normal);
   border-radius: 2px;
 }
+kbd {
+  padding: 0.125rem 0.25rem;
+  border: 1px solid var(--color-ui-normal);
+  border-radius: 0.25rem;
+  background: var(--color-bg-secondary);
+  color: var(--color-tx-normal);
+  font-family: monospace;
+}
 pre {
   padding: 1.5em;
   border-radius: 8px;
