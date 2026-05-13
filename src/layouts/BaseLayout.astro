@@ -4,17 +4,21 @@
 import "../styles/global.css";
 import type { ImageMetadata } from "astro";
 import FallbackImage from "../assets/blog-placeholder-1.jpg";
-import { SITE_TITLE } from "../consts";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 interface Props {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   image?: ImageMetadata;
 }
 
-const { title, description, image = FallbackImage } = Astro.props;
+const {
+  title = SITE_TITLE,
+  description = SITE_DESCRIPTION,
+  image = FallbackImage,
+} = Astro.props;
 ---
 
 <!doctype html>
