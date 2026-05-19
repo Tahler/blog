@@ -7,11 +7,14 @@ interface Props {
   title: string;
   description?: string;
   image?: ImageMetadata;
+  frontmatter?: Props;
 }
-const { title } = Astro.props;
+
+const pageProps = { ...Astro.props.frontmatter, ...Astro.props };
+const { title } = pageProps;
 ---
 
-<BaseLayout {...Astro.props}>
+<BaseLayout {...pageProps}>
   <header>
     <div class="breadcrumbs">
       <a href="/" class="breadcrumb">{SITE_TITLE}</a> / <p class="breadcrumb">
