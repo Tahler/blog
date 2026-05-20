@@ -1,6 +1,7 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
-import BlogPost from "../../../layouts/BlogPost.astro";
+import FormattedDate from "../../../components/FormattedDate.astro";
+import PageLayout from "../../../layouts/PageLayout.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -9,12 +10,47 @@ export async function getStaticPaths() {
     props: post,
   }));
 }
+
 type Props = CollectionEntry<"blog">;
 
 const post = Astro.props;
 const { Content } = await render(post);
+
+const { title, description, date } = post.data;
+const breadcrumbs = [{ title: "Blog", href: "/blog" }];
 ---
 
-<BlogPost {...post.data}>
-  <Content />
-</BlogPost>
+<PageLayout title={title} description={description} breadcrumbs={breadcrumbs}>
+  <main>
+    <article class="prose">
+      <div class="title">
+        <h1>{title}</h1>
+        <div class="date">
+          <FormattedDate date={new Date(date)} />
+        </div>
+        <hr />
+      </div>
+      <Content />
+    </article>
+  </main>
+</PageLayout>
+
+<style>
+  .prose {
+    padding: 1em 0 2em;
+    color: var(--color-tx-normal);
+  }
+  .title {
+    margin-bottom: 1em;
+    padding: 1em 0 0;
+    text-align: center;
+    line-height: 1;
+  }
+  .title h1 {
+    margin: 0 0 0.5em 0;
+  }
+  .date {
+    margin-bottom: 0.5em;
+    color: var(--color-tx-muted);
+  }
+</style>
