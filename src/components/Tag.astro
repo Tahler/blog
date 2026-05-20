@@ -1,0 +1,34 @@
+---
+interface Props {
+  value: string;
+  active?: boolean;
+}
+
+const { value, active = false } = Astro.props;
+const href =
+  value === "all" ? "/blog" : `/blog?tag=${encodeURIComponent(value)}`;
+---
+
+<a href={href} aria-current={active ? "page" : undefined}>{value}</a>
+
+<style>
+  a {
+    color: var(--color-tx-muted);
+    font-style: italic;
+    text-decoration-color: var(--color-tx-faint);
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25rem;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-action);
+    }
+
+    &[aria-current="page"] {
+      color: var(--color-action);
+      text-decoration-style: solid;
+    }
+  }
+</style>

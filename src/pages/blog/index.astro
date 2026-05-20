@@ -1,5 +1,6 @@
 ---
 import { SITE_DESCRIPTION } from "../../consts";
+import Tag from "../../components/Tag.astro";
 import PageLayout from "../../layouts/PageLayout.astro";
 import { getSortedPosts } from "../../lib/posts";
 
@@ -19,17 +20,8 @@ const filteredPosts = activeTag
 <PageLayout title="Blog" description={SITE_DESCRIPTION}>
   <main>
     <nav aria-label="Filter posts by tag">
-      <a href="/blog" aria-current={activeTag ? undefined : "page"}>all</a>
-      {
-        tags.map((tag) => (
-          <a
-            href={`/blog?tag=${tag}`}
-            aria-current={activeTag === tag ? "page" : undefined}
-          >
-            {tag}
-          </a>
-        ))
-      }
+      <Tag value="all" active={!activeTag} />
+      {tags.map((tag) => <Tag value={tag} active={activeTag === tag} />)}
     </nav>
     <ul>
       {
@@ -52,26 +44,6 @@ const filteredPosts = activeTag
     flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 2rem;
-
-    a {
-      color: var(--color-tx-muted);
-      font-style: italic;
-      text-decoration-color: var(--color-tx-faint);
-      text-decoration-line: underline;
-      text-decoration-style: dashed;
-      text-decoration-thickness: 1px;
-      text-underline-offset: 0.25rem;
-
-      &:hover,
-      &:focus-visible {
-        color: var(--color-action);
-      }
-
-      &[aria-current="page"] {
-        color: var(--color-action);
-        text-decoration-style: solid;
-      }
-    }
   }
 
   ul {

@@ -1,5 +1,6 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
+import Tag from "../../../components/Tag.astro";
 import PageLayout from "../../../layouts/PageLayout.astro";
 
 export async function getStaticPaths() {
@@ -16,7 +17,6 @@ const post = Astro.props;
 const { Content } = await render(post);
 
 const { title, description, date, tag } = post.data;
-const tagUrl = `/blog?tag=${encodeURIComponent(tag)}`;
 const breadcrumbs = [{ title: "Blog", href: "/blog" }];
 ---
 
@@ -27,7 +27,7 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
         <h1>{title}</h1>
         <div class="meta">
           <time datetime={date}>{date}</time>
-          <a href={tagUrl}>{tag}</a>
+          <Tag value={tag} />
         </div>
       </header>
       <Content />
@@ -51,21 +51,6 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
     display: flex;
     gap: 1rem;
     color: var(--color-tx-muted);
-  }
-
-  a {
-    color: var(--color-tx-muted);
-    font-style: italic;
-    text-decoration-color: var(--color-tx-faint);
-    text-decoration-line: underline;
-    text-decoration-style: dashed;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.25rem;
-
-    &:hover,
-    &:focus-visible {
-      color: var(--color-action);
-    }
   }
 
   footer {
