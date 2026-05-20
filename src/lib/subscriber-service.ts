@@ -128,7 +128,7 @@ export class SubscriberService {
       ...(subscriber.name ? { name: subscriber.name } : {}),
       wantsProjects: tag === "projects" ? false : subscriber.wantsProjects,
       wantsThoughts: tag === "thoughts" ? false : subscriber.wantsThoughts,
-      wantsOther: tag === "wants_other" ? false : subscriber.wantsOther,
+      wantsOther: tag === "other" ? false : subscriber.wantsOther,
     });
   }
 
@@ -150,7 +150,7 @@ export class SubscriberService {
 
       const unsubscribeUrl = new URL("/unsubscribe", site);
       unsubscribeUrl.searchParams.set("t", subscriber.token);
-      unsubscribeUrl.searchParams.set("topic", post.tag);
+      unsubscribeUrl.searchParams.set("tag", post.tag);
 
       try {
         await this.emailer.sendPost({

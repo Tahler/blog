@@ -136,7 +136,7 @@ describe(SubscriberService, () => {
     expect(gotEmails).toEqual(["bob@example.com"]);
   });
 
-  it("unsubscribeFromTag disables only the matching topic", async () => {
+  it("unsubscribeFromTag disables only the matching tag", async () => {
     const store = new FakeSubscriberStore([
       Subscriber.build({
         email: "alice@example.com",
@@ -205,11 +205,39 @@ describe(SubscriberService, () => {
         `<a href="https://bertyl.com/preferences?t=some-token">Manage preferences</a>`,
       );
       expect(got.html).toContain(
-        `<a href="https://bertyl.com/unsubscribe?t=some-token&topic=projects">Unsubscribe</a>`,
+        `<a href="https://bertyl.com/unsubscribe?t=some-token&tag=projects">Unsubscribe</a>`,
       );
     }
     expect(result.subscriberCount).toBe(1);
     expect(result.sentCount).toBe(1);
     expect(result.errorsByEmail).toEqual({});
+  });
+
+  it("sendPost uses other as the public unsubscribe tag", async () => {
+    const store = new FakeSubscriberStore([
+      Subscriber.build({
+        email: "alice@example.com",
+        token: "some-token",
+        wantsProjects: false,
+        wantsThoughts: false,
+        wantsOther: true,
+      }),
+    ]);
+    const emailer = new FakeEmailer();
+    const service = new SubscriberService(store, emailer);
+    const post: Post = {
+      url: "/blog/a-new-post",
+      title: "A New Post",
+      description: "A new post description",
+      date: new Date("2026-04-30"),
+      tag: "other",
+      body: "# Hello",
+    };
+
+    await service.sendPost(post, new URL("https://bertyl.com"));
+
+    expect(emailer.sent[0]?.html).toContain(
+      `<a href="https://bertyl.com/unsubscribe?t=some-token&tag=other">Unsubscribe</a>`,
+    );
   });
 });
