@@ -7,20 +7,27 @@ interface Props {
   title: string;
   description?: string;
   image?: ImageMetadata;
+  breadcrumbs?: { title: string; href?: string }[];
   frontmatter?: Props;
 }
 
 const pageProps = { ...Astro.props.frontmatter, ...Astro.props };
-const { title } = pageProps;
+const { breadcrumbs = [] } = pageProps;
 ---
 
 <BaseLayout {...pageProps}>
   <header>
-    <div class="breadcrumbs">
-      <a href="/" class="breadcrumb">{SITE_TITLE}</a> / <p class="breadcrumb">
-        {title}
-      </p>
-    </div>
+    <nav aria-label="Breadcrumb">
+      <a href="/">{SITE_TITLE}</a>
+      {
+        breadcrumbs.map(({ title, href }) => (
+          <>
+            <span class="separator">/</span>
+            {href ? <a href={href}>{title}</a> : <span>{title}</span>}
+          </>
+        ))
+      }
+    </nav>
     <Nav />
   </header>
   <slot />
@@ -41,21 +48,28 @@ const { title } = pageProps;
     justify-content: space-between;
   }
 
-  .breadcrumb {
-    margin: 0;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    display: inline-block;
-    color: inherit;
-    text-decoration: none;
+  nav {
+    color: var(--color-tx-muted);
 
-    &:hover,
-    &:focus-visible {
-      color: var(--color-action);
-    }
+    a {
+      margin: 0;
+      border-radius: 0.25rem;
+      display: inline-block;
+      color: inherit;
+      text-decoration: none;
 
-    &:active {
-      background: var(--color-selection);
+      &:hover,
+      &:focus-visible {
+        color: var(--color-action);
+      }
+
+      &:active {
+        background: var(--color-selection);
+      }
     }
+  }
+
+  .separator {
+    margin: 0 0.125rem;
   }
 </style>

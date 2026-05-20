@@ -6,9 +6,14 @@ import PageLayout from "./PageLayout.astro";
 type Props = CollectionEntry<"blog">["data"];
 
 const { title, description, date } = Astro.props;
+const breadcrumbs = [{ title: "Blog", href: "/blog" }];
 ---
 
-<PageLayout title={title} description={description}>
+<PageLayout
+  title={title}
+  description={description}
+  breadcrumbs={breadcrumbs}
+>
   <main>
     <article>
       <div class="prose">
@@ -26,11 +31,6 @@ const { title, description, date } = Astro.props;
 </PageLayout>
 
 <style>
-  main {
-    width: 720px;
-    max-width: calc(100% - 2em);
-    margin: auto;
-  }
   .prose {
     padding: 1em 0 2em;
     color: var(--color-tx-normal);
