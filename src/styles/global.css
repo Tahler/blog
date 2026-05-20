@@ -160,11 +160,17 @@
     var(--flexoki-yellow-100),
     var(--flexoki-yellow-900)
   );
-  --color-action: light-dark(var(--flexoki-cyan-600), var(--flexoki-cyan-400));
-  --color-bg-hover: light-dark(var(--flexoki-cyan-50), var(--flexoki-cyan-950));
+  --color-action: light-dark(
+    var(--flexoki-magenta-600),
+    var(--flexoki-magenta-400)
+  );
+  --color-bg-hover: light-dark(
+    var(--flexoki-magenta-50),
+    var(--flexoki-magenta-950)
+  );
   --color-selection: light-dark(
-    rgba(187, 220, 206, 0.3),
-    rgba(58, 169, 159, 0.2)
+    color-mix(in srgb, var(--flexoki-magenta-200) 30%, transparent),
+    color-mix(in srgb, var(--flexoki-magenta-400) 20%, transparent)
   );
   --color-re: light-dark(var(--flexoki-red-600), var(--flexoki-red-400));
   --color-re-hover: light-dark(var(--flexoki-red-400), var(--flexoki-red-600));
