@@ -1,6 +1,5 @@
 ---
 import Nav from "../components/Nav.astro";
-import { SITE_TITLE } from "../consts";
 import BaseLayout from "./BaseLayout.astro";
 
 interface Props {
@@ -18,7 +17,9 @@ const { breadcrumbs = [] } = pageProps;
 <BaseLayout {...pageProps}>
   <header>
     <nav aria-label="Breadcrumb">
-      <a href="/">{SITE_TITLE}</a>
+      <a href="/">
+        T<span class="suffix">yler </span>B<span class="suffix">erry</span>
+      </a>
       {
         breadcrumbs.map(({ title, href }) => (
           <>
@@ -71,5 +72,11 @@ const { breadcrumbs = [] } = pageProps;
 
   .separator {
     margin: 0 0.125rem;
+  }
+
+  @media (max-width: 720px) {
+    .suffix {
+      display: none;
+    }
   }
 </style>
