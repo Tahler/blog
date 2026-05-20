@@ -3,14 +3,37 @@ import { SITE_DESCRIPTION } from "../../consts";
 import PageLayout from "../../layouts/PageLayout.astro";
 import { getSortedPosts } from "../../lib/posts";
 
+export const prerender = false;
+
 const posts = await getSortedPosts();
+const tags = [...new Set(posts.map((post) => post.tag))].sort();
+const selectedTag = Astro.url.searchParams.get("tag");
+const activeTag = tags.includes(selectedTag as (typeof tags)[number])
+  ? selectedTag
+  : null;
+const filteredPosts = activeTag
+  ? posts.filter((post) => post.tag === activeTag)
+  : posts;
 ---
 
 <PageLayout title="Blog" description={SITE_DESCRIPTION}>
   <main>
+    <nav aria-label="Filter posts by tag">
+      <a href="/blog" aria-current={activeTag ? undefined : "page"}>all</a>
+      {
+        tags.map((tag) => (
+          <a
+            href={`/blog?tag=${tag}`}
+            aria-current={activeTag === tag ? "page" : undefined}
+          >
+            {tag}
+          </a>
+        ))
+      }
+    </nav>
     <ul>
       {
-        posts.map((post) => (
+        filteredPosts.map((post) => (
           <li>
             <a href={post.url}>
               <time datetime={post.date}>{post.date}</time>
@@ -24,6 +47,33 @@ const posts = await getSortedPosts();
 </PageLayout>
 
 <style>
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    a {
+      color: var(--color-tx-muted);
+      font-style: italic;
+      text-decoration-color: var(--color-tx-faint);
+      text-decoration-line: underline;
+      text-decoration-style: dashed;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+
+      &:hover,
+      &:focus-visible {
+        color: var(--color-action);
+      }
+
+      &[aria-current="page"] {
+        color: var(--color-action);
+        text-decoration-style: solid;
+      }
+    }
+  }
+
   ul {
     list-style-type: none;
     margin: 0;
