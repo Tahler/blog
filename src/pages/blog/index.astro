@@ -1,5 +1,4 @@
 ---
-import FormattedDate from "../../components/FormattedDate.astro";
 import { SITE_DESCRIPTION } from "../../consts";
 import PageLayout from "../../layouts/PageLayout.astro";
 import { getSortedPosts } from "../../lib/posts";
@@ -14,10 +13,8 @@ const posts = await getSortedPosts();
         posts.map((post) => (
           <li>
             <a href={post.url}>
-              <h4 class="title">{post.title}</h4>
-              <p class="date">
-                <FormattedDate date={post.date} />
-              </p>
+              <time datetime={post.date}>{post.date}</time>
+              <span>{post.title}</span>
             </a>
           </li>
         ))
@@ -27,44 +24,22 @@ const posts = await getSortedPosts();
 </PageLayout>
 
 <style>
-  main {
-    width: 960px;
-  }
   ul {
-    display: grid;
-    gap: 1rem;
     list-style-type: none;
     margin: 0;
     padding: 0;
   }
-  ul li * {
+  a {
     text-decoration: none;
-    transition: 0.2s ease;
+    transition: 150ms ease;
+    color: inherit;
+
+    &:hover {
+      color: var(--color-action);
+    }
   }
-  ul li a {
-    display: block;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--color-ui-normal);
-  }
-  .title {
-    margin: 0 0 0.35rem;
-    color: var(--color-tx-normal);
-    line-height: 1;
-  }
-  .date {
-    margin: 0 0 0.35rem;
+  time {
+    padding-right: 0.5rem;
     color: var(--color-tx-muted);
-  }
-  ul li a:hover h4,
-  ul li a:hover .date {
-    color: var(--color-action);
-  }
-  @media (max-width: 720px) {
-    ul {
-      gap: 0.5em;
-    }
-    ul li a {
-      padding: 0.75rem 0;
-    }
   }
 </style>

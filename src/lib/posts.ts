@@ -5,7 +5,6 @@ type BlogEntry = CollectionEntry<"blog">;
 function toPost(entry: BlogEntry): Post {
   return {
     ...entry.data,
-    date: new Date(entry.data.date),
     url: `/blog/${entry.id}/`,
     body: entry.body || "",
   };
@@ -15,7 +14,7 @@ export interface Post {
   url: string;
   title: string;
   description: string;
-  date: Date;
+  date: string; // Date ISO format.
   tag: BlogEntry["data"]["tag"];
   body: string;
 }
