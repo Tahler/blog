@@ -60,7 +60,16 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
 
   :global(article) {
     a {
-      text-decoration: none;
+      color: inherit;
+      text-decoration-color: var(--color-tx-faint);
+      text-decoration-line: underline;
+      text-decoration-style: dashed;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.25rem;
+
+      &:hover {
+        color: var(--color-action);
+      }
     }
 
     video {
