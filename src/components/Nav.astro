@@ -2,15 +2,15 @@
 
 ---
 
-<nav>
+<nav aria-label="Primary">
   <a href="/about" id="about-link" class="item">
-    <kbd>A</kbd>bout
+    <kbd>A</kbd><span class="suffix">bout</span>
   </a>
   <a href="/blog" id="blog-link" class="item">
-    <kbd>B</kbd>log
+    <kbd>B</kbd><span class="suffix">log</span>
   </a>
   <a href="/contact" id="contact-link" class="item">
-    <kbd>C</kbd>ontact
+    <kbd>C</kbd><span class="suffix">ontact</span>
   </a>
   <button
     id="theme-toggle"
@@ -18,7 +18,7 @@
     aria-label="Toggle color theme"
     class="item"
   >
-    <kbd>D</kbd>ark
+    <kbd>D</kbd><span class="suffix">ark</span>
   </button>
 </nav>
 
@@ -100,7 +100,7 @@
 
 <style>
   nav {
-    margin: 1rem;
+    margin: 1rem 0 1rem 1rem;
     display: flex;
     justify-content: end;
     gap: 1rem;
@@ -138,5 +138,11 @@
     text-decoration-color: var(--color-tx-faint);
     text-decoration-thickness: 0;
     text-underline-offset: 0.25em;
+  }
+
+  @media (max-width: 720px) {
+    .suffix {
+      display: none;
+    }
   }
 </style>
