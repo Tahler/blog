@@ -73,24 +73,23 @@ const wantsOther = subscriber?.wantsOther ?? false;
 
 <PageLayout title={title} description={message}>
   <main>
+    <h3>{title}</h3>
     <p>{message}</p>
     {
       subscriber ? (
         <form method="post">
-          <p>
+          <fieldset class="table">
             <label>
-              Email
+              <span>Email</span>
               <input type="email" value={email} disabled />
             </label>
-          </p>
-          <p>
             <label>
-              Name
+              <span>Name</span>
               <input type="text" name="name" value={name} autocomplete="name" />
             </label>
-          </p>
+          </fieldset>
           <fieldset>
-            <legend>Topics</legend>
+            <legend>Email me about...</legend>
             <label>
               <input
                 type="checkbox"
@@ -107,16 +106,109 @@ const wantsOther = subscriber?.wantsOther ?? false;
               />
               Thoughts
             </label>
+            <label>
+              <input type="checkbox" name="wantsOther" checked={wantsOther} />
+              Other
+            </label>
           </fieldset>
-          <p>
-            <button type="submit">Save preferences</button>
-          </p>
+          <button type="submit">Save preferences</button>
         </form>
       ) : (
-        <p>
-          <a href="/">Back home</a>
-        </p>
+        <a href="/">Back home</a>
       )
     }
   </main>
 </PageLayout>
+
+<style>
+  p {
+    margin-top: 0;
+    color: var(--color-tx-muted);
+  }
+
+  form {
+    margin-top: 2rem;
+  }
+
+  label,
+  legend {
+    color: var(--color-tx-muted);
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .table {
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 1rem;
+  }
+
+  .table label {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: center;
+  }
+
+  input:not([type="checkbox"]) {
+    width: 100%;
+    padding: 0.25rem 0;
+    border: 0;
+    border-bottom: 1px solid var(--color-ui-normal);
+    border-radius: 0;
+    background: transparent;
+    color: var(--color-tx-normal);
+    font: inherit;
+
+    &:disabled {
+      color: var(--color-tx-faint);
+    }
+
+    &:focus {
+      border-color: var(--color-action);
+      outline: none;
+    }
+  }
+
+  legend {
+    margin-bottom: 0.25rem;
+    padding: 0.5rem 0 0 0;
+  }
+
+  input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    accent-color: var(--color-action);
+  }
+
+  button {
+    margin-top: 1rem;
+    justify-self: start;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 0.25rem;
+    background: var(--color-tx-normal);
+    color: var(--color-bg-primary);
+    cursor: pointer;
+    font: inherit;
+    transition: background-color 150ms ease;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--color-action);
+      outline: none;
+    }
+  }
+</style>
