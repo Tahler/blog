@@ -1,6 +1,5 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
-import FormattedDate from "../../../components/FormattedDate.astro";
 import PageLayout from "../../../layouts/PageLayout.astro";
 
 export async function getStaticPaths() {
@@ -22,35 +21,21 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
 
 <PageLayout title={title} description={description} breadcrumbs={breadcrumbs}>
   <main>
-    <article class="prose">
-      <div class="title">
+    <article>
+      <header>
         <h1>{title}</h1>
-        <div class="date">
-          <FormattedDate date={new Date(date)} />
-        </div>
-        <hr />
-      </div>
+        <time datetime={date}>{date}</time>
+      </header>
       <Content />
     </article>
   </main>
 </PageLayout>
 
 <style>
-  .prose {
-    padding: 1em 0 2em;
-    color: var(--color-tx-normal);
+  header {
+    margin-bottom: 2em;
   }
-  .title {
-    margin-bottom: 1em;
-    padding: 1em 0 0;
-    text-align: center;
-    line-height: 1;
-  }
-  .title h1 {
-    margin: 0 0 0.5em 0;
-  }
-  .date {
-    margin-bottom: 0.5em;
+  time {
     color: var(--color-tx-muted);
   }
 </style>

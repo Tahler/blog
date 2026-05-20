@@ -225,7 +225,6 @@
 body {
   font-family: sans-serif;
   margin: 0;
-  padding: 1;
   text-align: left;
   background: var(--color-bg-primary);
   word-wrap: break-word;
@@ -271,9 +270,6 @@ a:hover {
 }
 p {
   margin-bottom: 1em;
-}
-.prose p {
-  margin-bottom: 2em;
 }
 textarea {
   width: 100%;
