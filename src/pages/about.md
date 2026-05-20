@@ -10,6 +10,7 @@ uses the [Flexoki](https://stephango.com/flexoki) color palette,
 is hosted by [Vercel](https://vercel.com),
 stores subscriptions in [Neon](https://neon.tech),
 and sends emails with [Resend](https://resend.com).
+It does not use cookies.
 
 If you [subscribe](/subscribe), your email and preferences are stored in a single row in a Neon database that only I can access. If you unsubscribe, that row is fully deleted.
 
