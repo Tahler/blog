@@ -14,4 +14,6 @@ It does not use cookies.
 
 If you [subscribe](/subscribe), your email and preferences are stored in a single row in a Neon database that only I can access. If you unsubscribe, that row is fully deleted.
 
+Or use the [RSS feed](/rss.xml) as an anonymous option.
+
 There are keybindings! Press the <kbd>A</kbd> key to go to the about page, <kbd>B</kbd> to see blog posts, <kbd>C</kbd> to contact, and <kbd>D</kbd> to toggle dark mode.
