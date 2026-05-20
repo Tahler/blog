@@ -54,6 +54,7 @@ Where `tag` is one of:
 
 - `projects`
 - `thoughts`
+- `other`
 
 ## Data flows
 

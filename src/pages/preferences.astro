@@ -22,6 +22,7 @@ if (Astro.request.method === "POST") {
       name: String(formData.get("name") ?? ""),
       wantsProjects: formData.get("wantsProjects") === "on",
       wantsThoughts: formData.get("wantsThoughts") === "on",
+      wantsOther: formData.get("wantsOther") === "on",
     });
     const preferencesUrl = new URL("/preferences", Astro.url);
     preferencesUrl.searchParams.set("t", token);
@@ -67,6 +68,7 @@ const name = subscriber?.name ?? "";
 const email = subscriber?.email ?? "";
 const wantsProjects = subscriber?.wantsProjects ?? false;
 const wantsThoughts = subscriber?.wantsThoughts ?? false;
+const wantsOther = subscriber?.wantsOther ?? false;
 ---
 
 <PageLayout title={title} description={message}>

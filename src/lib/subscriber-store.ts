@@ -11,7 +11,7 @@ export interface SubscriberStore {
   deleteByToken(token: string): Promise<void>;
 }
 
-export type BlogPostTag = "projects" | "thoughts";
+export type BlogPostTag = "projects" | "thoughts" | "other";
 
 export interface PendingSubscriberInput {
   email: string;
@@ -23,6 +23,7 @@ export interface PreferencesInput {
   name?: string;
   wantsProjects: boolean;
   wantsThoughts: boolean;
+  wantsOther: boolean;
 }
 
 export class Subscriber {
@@ -36,6 +37,7 @@ export class Subscriber {
     public lastEmailSentAt: Date | null,
     public wantsProjects: boolean,
     public wantsThoughts: boolean,
+    public wantsOther: boolean,
   ) {}
 
   canSendEmail(now = new Date()) {
@@ -58,6 +60,7 @@ export class Subscriber {
       row.last_email_sent_at as Date | null,
       Boolean(row.wants_projects),
       Boolean(row.wants_thoughts),
+      Boolean(row.wants_other),
     );
   }
 
@@ -74,6 +77,7 @@ export class Subscriber {
       "lastEmailSentAt" in overrides ? overrides.lastEmailSentAt! : null,
       overrides.wantsProjects ?? true,
       overrides.wantsThoughts ?? true,
+      overrides.wantsOther ?? true,
     );
   }
 }
@@ -127,6 +131,14 @@ class NeonDatabase implements SubscriberStore {
           WHERE active = true
             AND wants_thoughts = true
         `;
+
+      case "other":
+        return this.sql`
+          SELECT *
+          FROM subscribers
+          WHERE active = true
+            AND wants_other = true
+        `;
     }
   }
 
@@ -158,13 +170,15 @@ class NeonDatabase implements SubscriberStore {
     name,
     wantsProjects,
     wantsThoughts,
+    wantsOther,
   }: PreferencesInput) {
     const nullName = name || null;
     await this.sql`
 			UPDATE subscribers
 			SET name = ${nullName},
 				wants_projects = ${wantsProjects},
-				wants_thoughts = ${wantsThoughts}
+				wants_thoughts = ${wantsThoughts},
+				wants_other = ${wantsOther}
 			WHERE token = ${token}
 		`;
   }
@@ -192,6 +206,7 @@ export class FakeSubscriberStore implements SubscriberStore {
     const predicates: { [k in BlogPostTag]: (s: Subscriber) => boolean } = {
       projects: (s) => s.wantsProjects === true,
       thoughts: (s) => s.wantsThoughts === true,
+      other: (s) => s.wantsOther === true,
     };
     const predicate = predicates[tag];
     return this.subscribers.filter(predicate) ?? null;
@@ -231,6 +246,7 @@ export class FakeSubscriberStore implements SubscriberStore {
     subscriber.name = input.name || null;
     subscriber.wantsProjects = input.wantsProjects;
     subscriber.wantsThoughts = input.wantsThoughts;
+    subscriber.wantsOther = input.wantsOther;
   }
 
   async deleteByToken(token: string) {

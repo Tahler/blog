@@ -10,4 +10,5 @@ export const subscribers = pgTable("subscribers", {
   lastEmailSentAt: timestamp("last_email_sent_at"),
   wantsProjects: boolean("wants_projects").notNull().default(true),
   wantsThoughts: boolean("wants_thoughts").notNull().default(true),
+  wantsOther: boolean("wants_other").notNull().default(true),
 });

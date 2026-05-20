@@ -98,6 +98,7 @@ describe(SubscriberService, () => {
         token,
         wantsProjects: true,
         wantsThoughts: true,
+        wantsOther: true,
       }),
     ]);
     const service = new SubscriberService(store, new FakeEmailer());
@@ -106,12 +107,14 @@ describe(SubscriberService, () => {
       name: "Alice",
       wantsProjects: false,
       wantsThoughts: true,
+      wantsOther: false,
     });
 
     const got = await store.readByToken(token);
     expect(got?.name).toBe("Alice");
     expect(got?.wantsProjects).toBe(false);
     expect(got?.wantsThoughts).toBe(true);
+    expect(got?.wantsOther).toBe(false);
   });
 
   it("unsubscribe removes the matching subscriber", async () => {
@@ -133,6 +136,28 @@ describe(SubscriberService, () => {
     expect(gotEmails).toEqual(["bob@example.com"]);
   });
 
+  it("unsubscribeFromTag disables only the matching topic", async () => {
+    const store = new FakeSubscriberStore([
+      Subscriber.build({
+        email: "alice@example.com",
+        name: "Alice",
+        token: "alice-token",
+        wantsProjects: true,
+        wantsThoughts: true,
+        wantsOther: true,
+      }),
+    ]);
+    const service = new SubscriberService(store, new FakeEmailer());
+
+    await service.unsubscribeFromTag("alice-token", "projects");
+
+    const got = await store.readByToken("alice-token");
+    expect(got?.name).toBe("Alice");
+    expect(got?.wantsProjects).toBe(false);
+    expect(got?.wantsThoughts).toBe(true);
+    expect(got?.wantsOther).toBe(true);
+  });
+
   it("sendPost sends existing notification payload to matching subscribers", async () => {
     const store = new FakeSubscriberStore([
       Subscriber.build({
@@ -141,6 +166,7 @@ describe(SubscriberService, () => {
         token: "some-token",
         wantsProjects: true,
         wantsThoughts: false,
+        wantsOther: false,
       }),
     ]);
     const emailer = new FakeEmailer();
@@ -179,7 +205,7 @@ describe(SubscriberService, () => {
         `<a href="https://bertyl.com/preferences?t=some-token">Manage preferences</a>`,
       );
       expect(got.html).toContain(
-        `<a href="https://bertyl.com/unsubscribe?t=some-token">Unsubscribe</a>`,
+        `<a href="https://bertyl.com/unsubscribe?t=some-token&topic=projects">Unsubscribe</a>`,
       );
     }
     expect(result.subscriberCount).toBe(1);

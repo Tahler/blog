@@ -4,6 +4,7 @@ import {
   subscriberStore,
   type SubscriberStore,
   type Subscriber,
+  type BlogPostTag,
 } from "./subscriber-store";
 import { emailer, type Emailer } from "./email";
 import { renderPost } from "./render-post";
@@ -97,7 +98,12 @@ export class SubscriberService {
 
   async updatePreferences(
     token: string,
-    input: { name: string; wantsProjects: boolean; wantsThoughts: boolean },
+    input: {
+      name: string;
+      wantsProjects: boolean;
+      wantsThoughts: boolean;
+      wantsOther: boolean;
+    },
   ): Promise<void> {
     await this.readByToken(token);
     const name = input.name.trim();
@@ -106,12 +112,24 @@ export class SubscriberService {
       ...(name ? { name } : {}),
       wantsProjects: input.wantsProjects,
       wantsThoughts: input.wantsThoughts,
+      wantsOther: input.wantsOther,
     });
   }
 
   async unsubscribe(token: string): Promise<void> {
     await this.readByToken(token);
     await this.store.deleteByToken(token);
+  }
+
+  async unsubscribeFromTag(token: string, tag: BlogPostTag): Promise<void> {
+    const subscriber = await this.readByToken(token);
+    await this.store.updatePreferences({
+      token,
+      ...(subscriber.name ? { name: subscriber.name } : {}),
+      wantsProjects: tag === "projects" ? false : subscriber.wantsProjects,
+      wantsThoughts: tag === "thoughts" ? false : subscriber.wantsThoughts,
+      wantsOther: tag === "wants_other" ? false : subscriber.wantsOther,
+    });
   }
 
   async sendPost(post: Post, site: URL) {
@@ -132,6 +150,7 @@ export class SubscriberService {
 
       const unsubscribeUrl = new URL("/unsubscribe", site);
       unsubscribeUrl.searchParams.set("t", subscriber.token);
+      unsubscribeUrl.searchParams.set("topic", post.tag);
 
       try {
         await this.emailer.sendPost({

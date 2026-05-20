@@ -13,7 +13,7 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    tag: z.enum(["projects", "thoughts"]),
+    tag: z.enum(["projects", "thoughts", "other"]),
   }),
 });
 
