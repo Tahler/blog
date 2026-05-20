@@ -51,7 +51,11 @@ const filteredPosts = activeTag
     margin: 0;
     padding: 0;
   }
+
   a {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 0.5rem;
     text-decoration: none;
     transition: 150ms ease;
     color: inherit;
@@ -60,8 +64,8 @@ const filteredPosts = activeTag
       color: var(--color-action);
     }
   }
+
   time {
-    padding-right: 0.5rem;
     color: var(--color-tx-muted);
   }
 </style>
