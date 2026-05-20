@@ -310,7 +310,6 @@ blockquote {
   border-left: 4px solid var(--color-action);
   padding: 0 0 0 20px;
   margin: 0;
-  font-size: 1.333em;
 }
 hr {
   border: none;

@@ -33,6 +33,13 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
       <Content />
     </article>
   </main>
+  <hr />
+  <footer>
+    <blockquote>
+      <p><a href="mailto:tyler@bertyl.com">Reply by email</a></p>
+      <p>Published {date}</p>
+    </blockquote>
+  </footer>
 </PageLayout>
 
 <style>
@@ -58,6 +65,19 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
     &:hover,
     &:focus-visible {
       color: var(--color-action);
+    }
+  }
+
+  footer {
+    margin: 4rem 0;
+
+    blockquote {
+      background: var(--color-bg-secondary);
+      padding: 1rem;
+
+      p {
+        margin: 0;
+      }
     }
   }
 </style>
