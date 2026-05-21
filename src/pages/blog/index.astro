@@ -15,9 +15,10 @@ const activeTag = tags.includes(selectedTag as (typeof tags)[number])
 const filteredPosts = activeTag
   ? posts.filter((post) => post.tag === activeTag)
   : posts;
+const breadcrumbs = [{ title: "Blog" }];
 ---
 
-<PageLayout title="Blog" description={SITE_DESCRIPTION}>
+<PageLayout title="Blog" description={SITE_DESCRIPTION} breadcrumbs={breadcrumbs}>
   <main>
     <nav aria-label="Filter posts by tag">
       <Tag value="all" active={!activeTag} />

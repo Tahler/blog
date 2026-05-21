@@ -1,6 +1,8 @@
 ---
 layout: ../layouts/PageLayout.astro
 title: About
+breadcrumbs:
+  - title: About
 ---
 
 I made this site as a quieter place to share my thoughts and projects with people in my circle.

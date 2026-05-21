@@ -16,19 +16,25 @@ const { breadcrumbs = [] } = pageProps;
 
 <BaseLayout {...pageProps}>
   <header>
-    <nav aria-label="Breadcrumb">
-      <a href="/">
-        T<span class="suffix">yler </span>B<span class="suffix">erry</span>
-      </a>
-      {
-        breadcrumbs.map(({ title, href }) => (
-          <>
-            <span class="separator">/</span>
-            {href ? <a href={href}>{title}</a> : <span>{title}</span>}
-          </>
-        ))
-      }
-    </nav>
+    {
+      breadcrumbs.length ? (
+        <nav aria-label="Breadcrumb">
+          <a href="/">
+            T<span class="suffix">yler </span>B<span class="suffix">erry</span>
+          </a>
+          {breadcrumbs.map(({ title, href }) => (
+            <>
+              <span class="separator">/</span>
+              {href ? <a href={href}>{title}</a> : <span>{title}</span>}
+            </>
+          ))}
+        </nav>
+      ) : (
+        <a class="home-link" href="/">
+          T<span class="suffix">yler </span>B<span class="suffix">erry</span>
+        </a>
+      )
+    }
     <Nav />
   </header>
   <slot />
@@ -49,7 +55,8 @@ const { breadcrumbs = [] } = pageProps;
     justify-content: space-between;
   }
 
-  nav {
+  nav,
+  .home-link {
     color: var(--color-tx-muted);
 
     a {
@@ -68,6 +75,23 @@ const { breadcrumbs = [] } = pageProps;
       &:active {
         background: var(--color-selection);
       }
+    }
+  }
+
+  .home-link {
+    margin: -0.25rem -0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-action);
+    }
+
+    &:active {
+      background: var(--color-selection);
     }
   }
 
