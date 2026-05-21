@@ -269,7 +269,12 @@ b {
   font-weight: 700;
 }
 a {
-  color: var(--color-action);
+  color: inherit;
+  text-decoration-color: var(--color-tx-faint);
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25rem;
 }
 a:hover {
   color: var(--color-action);
