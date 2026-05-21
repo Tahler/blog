@@ -208,7 +208,7 @@ class SubscriberEmailer {
           <p>
             <a
                 href="${confirmationUrl}"
-                style="display: inline-block; padding: 12px 16px; border-radius: 6px; background: #0f766e; color: #fff; text-decoration: none; font-weight: 600;"
+                style="display: inline-block; padding: 12px 16px; border-radius: 6px; background: #a02f6f; color: #fff; text-decoration: none; font-weight: 600;"
             >
               Confirm subscription
             </a>
