@@ -18,7 +18,7 @@ jobs:
           NOTIFY_API_SECRET: ${{ secrets.NOTIFY_API_SECRET }}
         run: |
           curl \
-            --fail \
+            --fail-with-body \
             --show-error \
             --silent \
             -X POST \
