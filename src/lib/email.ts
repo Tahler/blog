@@ -17,7 +17,13 @@ class ResendEmailer implements Emailer {
   ) {}
 
   async send(message: Message) {
-    await this.client.emails.send({ ...message, from: this.from });
+    const { error } = await this.client.emails.send({
+      ...message,
+      from: this.from,
+    });
+    if (error) {
+      throw new Error(`Resend failed to send email: ${error.message}`);
+    }
   }
 }
 
