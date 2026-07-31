@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import { FakeEmailer } from "./email";
 import type { Post } from "./posts";
-import { SubscriberService } from "./subscriber-service";
+import {
+  InvalidPostRecipientError,
+  SubscriberService,
+} from "./subscriber-service";
 import { FakeSubscriberStore, Subscriber } from "./subscriber-store";
 
 describe(SubscriberService, () => {
@@ -239,5 +242,86 @@ describe(SubscriberService, () => {
     expect(emailer.sent[0]?.html).toContain(
       `<a href="https://bertyl.com/unsubscribe?t=some-token&tag=other">Unsubscribe</a>`,
     );
+  });
+
+  it("sendPostToSubscriber sends only the selected active subscriber", async () => {
+    const store = new FakeSubscriberStore([
+      Subscriber.build({
+        email: "alice@example.com",
+        name: "Alice",
+        token: "alice-token",
+        wantsProjects: true,
+      }),
+      Subscriber.build({
+        email: "bob@example.com",
+        name: "Bob",
+        token: "bob-token",
+        wantsProjects: true,
+      }),
+    ]);
+    const emailer = new FakeEmailer();
+    const service = new SubscriberService(store, emailer);
+    const post: Post = {
+      url: "/blog/a-new-post",
+      title: "A New Post",
+      description: "A new post description",
+      date: "2026-04-30",
+      tag: "projects",
+      body: "# Hello",
+    };
+
+    await service.sendPostToSubscriber(
+      post,
+      new URL("https://bertyl.com"),
+      " BOB@EXAMPLE.COM ",
+    );
+
+    expect(emailer.sent).toHaveLength(1);
+    expect(emailer.sent[0]).toEqual(
+      expect.objectContaining({ to: "Bob <bob@example.com>" }),
+    );
+  });
+
+  it("sendPostToSubscriber rejects ineligible recipients", async () => {
+    const store = new FakeSubscriberStore([
+      Subscriber.build({
+        email: "pending@example.com",
+        active: false,
+        token: "pending-token",
+        wantsProjects: true,
+      }),
+      Subscriber.build({
+        email: "opted-out@example.com",
+        active: true,
+        token: "opted-out-token",
+        wantsProjects: false,
+      }),
+    ]);
+    const emailer = new FakeEmailer();
+    const service = new SubscriberService(store, emailer);
+    const post: Post = {
+      url: "/blog/a-new-post",
+      title: "A New Post",
+      description: "A new post description",
+      date: "2026-04-30",
+      tag: "projects",
+      body: "# Hello",
+    };
+
+    await expect(
+      service.sendPostToSubscriber(
+        post,
+        new URL("https://bertyl.com"),
+        "pending@example.com",
+      ),
+    ).rejects.toBeInstanceOf(InvalidPostRecipientError);
+    await expect(
+      service.sendPostToSubscriber(
+        post,
+        new URL("https://bertyl.com"),
+        "opted-out@example.com",
+      ),
+    ).rejects.toBeInstanceOf(InvalidPostRecipientError);
+    expect(emailer.sent).toEqual([]);
   });
 });

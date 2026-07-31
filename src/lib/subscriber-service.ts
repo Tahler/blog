@@ -145,22 +145,8 @@ export class SubscriberService {
         continue;
       }
 
-      const preferencesUrl = new URL("/preferences", site);
-      preferencesUrl.searchParams.set("t", subscriber.token);
-
-      const unsubscribeUrl = new URL("/unsubscribe", site);
-      unsubscribeUrl.searchParams.set("t", subscriber.token);
-      unsubscribeUrl.searchParams.set("tag", post.tag);
-
       try {
-        await this.emailer.sendPost({
-          to: subscriber,
-          subject: post.title,
-          contentHtml,
-          postUrl,
-          preferencesUrl: preferencesUrl.toString(),
-          unsubscribeUrl: unsubscribeUrl.toString(),
-        });
+        await this.sendPostEmail(subscriber, post, site, contentHtml, postUrl);
         sentCount += 1;
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -175,6 +161,55 @@ export class SubscriberService {
       errorsByEmail,
     };
   }
+
+  async sendPostToSubscriber(post: Post, site: URL, email: string) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const subscriber = await this.store.readByEmail(normalizedEmail);
+    if (
+      !subscriber ||
+      !subscriber.active ||
+      !subscriber.token ||
+      !subscriberWantsTag(subscriber, post.tag)
+    ) {
+      throw new InvalidPostRecipientError();
+    }
+
+    await this.sendPostEmail(
+      subscriber,
+      post,
+      site,
+      renderPost(post),
+      new URL(post.url, site).toString(),
+    );
+  }
+
+  private async sendPostEmail(
+    subscriber: Subscriber,
+    post: Post,
+    site: URL,
+    contentHtml: string,
+    postUrl: string,
+  ) {
+    const token = subscriber.token;
+    if (!token) {
+      throw new Error("Missing token");
+    }
+
+    const preferencesUrl = new URL("/preferences", site);
+    preferencesUrl.searchParams.set("t", token);
+    const unsubscribeUrl = new URL("/unsubscribe", site);
+    unsubscribeUrl.searchParams.set("t", token);
+    unsubscribeUrl.searchParams.set("tag", post.tag);
+
+    await this.emailer.sendPost({
+      to: subscriber,
+      subject: post.title,
+      contentHtml,
+      postUrl,
+      preferencesUrl: preferencesUrl.toString(),
+      unsubscribeUrl: unsubscribeUrl.toString(),
+    });
+  }
 }
 
 function generateToken() {
@@ -184,6 +219,19 @@ function generateToken() {
 export class InvalidEmailError extends Error {}
 
 export class InvalidTokenError extends Error {}
+
+export class InvalidPostRecipientError extends Error {}
+
+function subscriberWantsTag(subscriber: Subscriber, tag: BlogPostTag) {
+  switch (tag) {
+    case "projects":
+      return subscriber.wantsProjects;
+    case "thoughts":
+      return subscriber.wantsThoughts;
+    case "other":
+      return subscriber.wantsOther;
+  }
+}
 
 interface SubscriberPostInput {
   to: Recipient;

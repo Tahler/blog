@@ -1,0 +1,36 @@
+name: Send test notification
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: Post slug to send
+        required: true
+        type: string
+      recipient:
+        description: Active, opted-in subscriber email
+        required: true
+        type: string
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call https://www.bertyl.com/blog/{slug}/notify-test
+        env:
+          NOTIFY_URL: https://www.bertyl.com/blog/${{ inputs.slug }}/notify-test
+          NOTIFY_API_SECRET: ${{ secrets.NOTIFY_API_SECRET }}
+          RECIPIENT: ${{ inputs.recipient }}
+        run: |
+          body="$(jq --compact-output --null-input --arg recipient "$RECIPIENT" '{recipient: $recipient}')"
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --output /dev/null \
+            -X POST \
+            -H "Authorization: Bearer ${NOTIFY_API_SECRET}" \
+            -H "Content-Type: application/json" \
+            -H "Origin: https://www.bertyl.com" \
+            --data "$body" \
+            "${NOTIFY_URL}"
