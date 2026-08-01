@@ -274,9 +274,13 @@ class SubscriberEmailer {
       `
         <div style="font-family: sans-serif; line-height: 1.5; color: #111;">
           ${input.contentHtml}
-          <p><a href="${input.postUrl}">Read on the web</a></p>
-          <p><a href="${input.preferencesUrl}">Manage preferences</a></p>
-          <p><a href="${input.unsubscribeUrl}">Unsubscribe</a></p>
+          <p style="margin-top: 32px;">
+            <a href="${input.postUrl}">Read on the web</a>
+            &middot;
+            <a href="${input.preferencesUrl}">Manage preferences</a>
+            &middot;
+            <a href="${input.unsubscribeUrl}">Unsubscribe</a>
+          </p>
         </div>
       `,
     );
