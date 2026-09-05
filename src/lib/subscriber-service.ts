@@ -4,8 +4,8 @@ import {
   subscriberStore,
   type SubscriberStore,
   type Subscriber,
-  type BlogPostTag,
 } from "./subscriber-store";
+import type { BlogPostTag } from "./blog-post-tags";
 import { emailer, type Emailer } from "./email";
 import { renderPost } from "./render-post";
 import type { Post } from "./posts";
@@ -102,6 +102,7 @@ export class SubscriberService {
       name: string;
       wantsProjects: boolean;
       wantsThoughts: boolean;
+      wantsTravel: boolean;
       wantsOther: boolean;
     },
   ): Promise<void> {
@@ -112,6 +113,7 @@ export class SubscriberService {
       ...(name ? { name } : {}),
       wantsProjects: input.wantsProjects,
       wantsThoughts: input.wantsThoughts,
+      wantsTravel: input.wantsTravel,
       wantsOther: input.wantsOther,
     });
   }
@@ -128,6 +130,7 @@ export class SubscriberService {
       ...(subscriber.name ? { name: subscriber.name } : {}),
       wantsProjects: tag === "projects" ? false : subscriber.wantsProjects,
       wantsThoughts: tag === "thoughts" ? false : subscriber.wantsThoughts,
+      wantsTravel: tag === "travel" ? false : subscriber.wantsTravel,
       wantsOther: tag === "other" ? false : subscriber.wantsOther,
     });
   }
@@ -228,6 +231,8 @@ function subscriberWantsTag(subscriber: Subscriber, tag: BlogPostTag) {
       return subscriber.wantsProjects;
     case "thoughts":
       return subscriber.wantsThoughts;
+    case "travel":
+      return subscriber.wantsTravel;
     case "other":
       return subscriber.wantsOther;
   }

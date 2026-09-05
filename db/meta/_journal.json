@@ -15,6 +15,13 @@
       "when": 1779316800000,
       "tag": "0001_wants_other",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788558252030,
+      "tag": "0002_split_other_to_travel",
+      "breakpoints": true
     }
   ]
 }

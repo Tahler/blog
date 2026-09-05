@@ -21,6 +21,7 @@ describe(SubscriberService, () => {
     expect(got).not.toBeNull();
     expect(got?.email).toEqual(email);
     expect(got?.active).toBe(false);
+    expect(got?.wantsTravel).toBe(true);
     const token = got?.token;
     expect(token).not.toBeNull();
     expect(emailer.sent).toEqual([
@@ -101,6 +102,7 @@ describe(SubscriberService, () => {
         token,
         wantsProjects: true,
         wantsThoughts: true,
+        wantsTravel: true,
         wantsOther: true,
       }),
     ]);
@@ -110,6 +112,7 @@ describe(SubscriberService, () => {
       name: "Alice",
       wantsProjects: false,
       wantsThoughts: true,
+      wantsTravel: false,
       wantsOther: false,
     });
 
@@ -117,6 +120,7 @@ describe(SubscriberService, () => {
     expect(got?.name).toBe("Alice");
     expect(got?.wantsProjects).toBe(false);
     expect(got?.wantsThoughts).toBe(true);
+    expect(got?.wantsTravel).toBe(false);
     expect(got?.wantsOther).toBe(false);
   });
 
@@ -147,17 +151,19 @@ describe(SubscriberService, () => {
         token: "alice-token",
         wantsProjects: true,
         wantsThoughts: true,
+        wantsTravel: true,
         wantsOther: true,
       }),
     ]);
     const service = new SubscriberService(store, new FakeEmailer());
 
-    await service.unsubscribeFromTag("alice-token", "projects");
+    await service.unsubscribeFromTag("alice-token", "travel");
 
     const got = await store.readByToken("alice-token");
     expect(got?.name).toBe("Alice");
-    expect(got?.wantsProjects).toBe(false);
+    expect(got?.wantsProjects).toBe(true);
     expect(got?.wantsThoughts).toBe(true);
+    expect(got?.wantsTravel).toBe(false);
     expect(got?.wantsOther).toBe(true);
   });
 
@@ -244,6 +250,42 @@ describe(SubscriberService, () => {
     );
   });
 
+  it("sendPost sends travel posts only to travel subscribers", async () => {
+    const store = new FakeSubscriberStore([
+      Subscriber.build({
+        email: "alice@example.com",
+        token: "alice-token",
+        wantsTravel: true,
+      }),
+      Subscriber.build({
+        email: "bob@example.com",
+        token: "bob-token",
+        wantsTravel: false,
+      }),
+    ]);
+    const emailer = new FakeEmailer();
+    const service = new SubscriberService(store, emailer);
+    const post: Post = {
+      url: "/blog/a-new-post",
+      title: "A New Post",
+      description: "A new post description",
+      date: "2026-04-30",
+      tag: "travel",
+      body: "# Hello",
+    };
+
+    const result = await service.sendPost(post, new URL("https://bertyl.com"));
+
+    expect(emailer.sent).toHaveLength(1);
+    expect(emailer.sent[0]).toEqual(
+      expect.objectContaining({ to: "alice@example.com" }),
+    );
+    expect(emailer.sent[0]?.html).toContain(
+      `<a href="https://bertyl.com/unsubscribe?t=alice-token&tag=travel">Unsubscribe</a>`,
+    );
+    expect(result.subscriberCount).toBe(1);
+  });
+
   it("sendPostToSubscriber sends only the selected active subscriber", async () => {
     const store = new FakeSubscriberStore([
       Subscriber.build({
@@ -288,13 +330,13 @@ describe(SubscriberService, () => {
         email: "pending@example.com",
         active: false,
         token: "pending-token",
-        wantsProjects: true,
+        wantsTravel: true,
       }),
       Subscriber.build({
         email: "opted-out@example.com",
         active: true,
         token: "opted-out-token",
-        wantsProjects: false,
+        wantsTravel: false,
       }),
     ]);
     const emailer = new FakeEmailer();
@@ -304,7 +346,7 @@ describe(SubscriberService, () => {
       title: "A New Post",
       description: "A new post description",
       date: "2026-04-30",
-      tag: "projects",
+      tag: "travel",
       body: "# Hello",
     };
 

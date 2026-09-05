@@ -22,6 +22,7 @@ if (Astro.request.method === "POST") {
       name: String(formData.get("name") ?? ""),
       wantsProjects: formData.get("wantsProjects") === "on",
       wantsThoughts: formData.get("wantsThoughts") === "on",
+      wantsTravel: formData.get("wantsTravel") === "on",
       wantsOther: formData.get("wantsOther") === "on",
     });
     const preferencesUrl = new URL("/preferences", Astro.url);
@@ -68,6 +69,7 @@ const name = subscriber?.name ?? "";
 const email = subscriber?.email ?? "";
 const wantsProjects = subscriber?.wantsProjects ?? false;
 const wantsThoughts = subscriber?.wantsThoughts ?? false;
+const wantsTravel = subscriber?.wantsTravel ?? false;
 const wantsOther = subscriber?.wantsOther ?? false;
 ---
 
@@ -107,8 +109,12 @@ const wantsOther = subscriber?.wantsOther ?? false;
               Thoughts
             </label>
             <label>
+              <input type="checkbox" name="wantsTravel" checked={wantsTravel} />
+              Travel
+            </label>
+            <label>
               <input type="checkbox" name="wantsOther" checked={wantsOther} />
-              Other (Recipes, trips, life updates... not sure yet!)
+              Other (Recipes, life updates... not sure yet!)
             </label>
           </fieldset>
           <button type="submit">Save preferences</button>

@@ -6,7 +6,11 @@ import {
   InvalidTokenError,
   subscriberService,
 } from "../lib/subscriber-service";
-import type { BlogPostTag } from "../lib/subscriber-store";
+import {
+  BLOG_POST_TAG_LABELS,
+  isBlogPostTag,
+  type BlogPostTag,
+} from "../lib/blog-post-tags";
 
 const token = Astro.url.searchParams.get("t") ?? "";
 if (!token) {
@@ -72,19 +76,11 @@ if (!unsubscribed) {
 const email = subscriber?.email ?? "";
 
 function readTag(value: string | null): BlogPostTag | null {
-  if (value === "projects" || value === "thoughts" || value === "other") {
-    return value;
-  }
-  return null;
+  return isBlogPostTag(value) ? value : null;
 }
 
 function formatTag(value: BlogPostTag): string {
-  const labels: Record<BlogPostTag, string> = {
-    projects: "Projects",
-    thoughts: "Thoughts",
-    other: "Other",
-  };
-  return labels[value];
+  return BLOG_POST_TAG_LABELS[value];
 }
 ---
 

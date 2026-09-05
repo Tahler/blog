@@ -1,5 +1,7 @@
 import { neon } from "@neondatabase/serverless";
 
+import type { BlogPostTag } from "./blog-post-tags";
+
 export interface SubscriberStore {
   readByEmail(email: string): Promise<Subscriber | null>;
   readByToken(token: string): Promise<Subscriber | null>;
@@ -11,8 +13,6 @@ export interface SubscriberStore {
   deleteByToken(token: string): Promise<void>;
 }
 
-export type BlogPostTag = "projects" | "thoughts" | "other";
-
 export interface PendingSubscriberInput {
   email: string;
   token: string;
@@ -23,6 +23,7 @@ export interface PreferencesInput {
   name?: string;
   wantsProjects: boolean;
   wantsThoughts: boolean;
+  wantsTravel: boolean;
   wantsOther: boolean;
 }
 
@@ -37,6 +38,7 @@ export class Subscriber {
     public lastEmailSentAt: Date | null,
     public wantsProjects: boolean,
     public wantsThoughts: boolean,
+    public wantsTravel: boolean,
     public wantsOther: boolean,
   ) {}
 
@@ -60,6 +62,7 @@ export class Subscriber {
       row.last_email_sent_at as Date | null,
       Boolean(row.wants_projects),
       Boolean(row.wants_thoughts),
+      Boolean(row.wants_travel),
       Boolean(row.wants_other),
     );
   }
@@ -77,6 +80,7 @@ export class Subscriber {
       "lastEmailSentAt" in overrides ? overrides.lastEmailSentAt! : null,
       overrides.wantsProjects ?? true,
       overrides.wantsThoughts ?? true,
+      overrides.wantsTravel ?? true,
       overrides.wantsOther ?? true,
     );
   }
@@ -132,6 +136,14 @@ class NeonDatabase implements SubscriberStore {
             AND wants_thoughts = true
         `;
 
+      case "travel":
+        return this.sql`
+          SELECT *
+          FROM subscribers
+          WHERE active = true
+            AND wants_travel = true
+        `;
+
       case "other":
         return this.sql`
           SELECT *
@@ -170,6 +182,7 @@ class NeonDatabase implements SubscriberStore {
     name,
     wantsProjects,
     wantsThoughts,
+    wantsTravel,
     wantsOther,
   }: PreferencesInput) {
     const nullName = name || null;
@@ -178,6 +191,7 @@ class NeonDatabase implements SubscriberStore {
 			SET name = ${nullName},
 				wants_projects = ${wantsProjects},
 				wants_thoughts = ${wantsThoughts},
+				wants_travel = ${wantsTravel},
 				wants_other = ${wantsOther}
 			WHERE token = ${token}
 		`;
@@ -206,6 +220,7 @@ export class FakeSubscriberStore implements SubscriberStore {
     const predicates: { [k in BlogPostTag]: (s: Subscriber) => boolean } = {
       projects: (s) => s.wantsProjects === true,
       thoughts: (s) => s.wantsThoughts === true,
+      travel: (s) => s.wantsTravel === true,
       other: (s) => s.wantsOther === true,
     };
     const predicate = predicates[tag];
@@ -246,6 +261,7 @@ export class FakeSubscriberStore implements SubscriberStore {
     subscriber.name = input.name || null;
     subscriber.wantsProjects = input.wantsProjects;
     subscriber.wantsThoughts = input.wantsThoughts;
+    subscriber.wantsTravel = input.wantsTravel;
     subscriber.wantsOther = input.wantsOther;
   }
 

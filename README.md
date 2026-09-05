@@ -27,6 +27,17 @@ npm run db:generate
 npm run db:migrate
 ```
 
+To split a new tag from an existing tag, first add the new tag to
+the application and `db/schema.ts`, then generate a source-aware migration:
+
+```sh
+npm run db:split-tag -- other travel
+```
+
+The command only creates a migration. Review it and run `npm run db:migrate`
+before deploying the application. Existing subscribers inherit their source
+tag preference once; the two preferences are independent afterward.
+
 4. Start local dev server:
 
 ```sh
@@ -54,6 +65,7 @@ Where `tag` is one of:
 
 - `projects`
 - `thoughts`
+- `travel`
 - `other`
 
 ## Data flows

@@ -2,6 +2,8 @@ import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
+import { BLOG_POST_TAGS } from "./lib/blog-post-tags";
+
 const blog = defineCollection({
   loader: glob({
     base: "./src/content/blog",
@@ -13,7 +15,7 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    tag: z.enum(["projects", "thoughts", "other"]),
+    tag: z.enum(BLOG_POST_TAGS),
   }),
 });
 
