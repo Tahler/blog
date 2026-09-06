@@ -16,7 +16,7 @@ export const GET: APIRoute = async ({ site }) => {
       pubDate: post.date,
       categories: [post.tag],
       link: post.url,
-      content: renderPost(post),
+      content: renderPost(post, site || undefined),
     })),
   });
 };
