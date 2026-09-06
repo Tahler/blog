@@ -89,6 +89,29 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
     display: block;
     width: 100%;
     margin: 0;
+    background: linear-gradient(
+      110deg,
+      var(--color-bg-secondary) 30%,
+      var(--color-ui-normal) 45%,
+      var(--color-bg-secondary) 60%
+    );
+    background-size: 200% 100%;
+    animation: cdmx-gallery-skeleton 1.8s ease-in-out infinite;
+  }
+
+  @keyframes cdmx-gallery-skeleton {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(article .cdmx-gallery img) {
+      animation: none;
+    }
   }
 
   footer {
