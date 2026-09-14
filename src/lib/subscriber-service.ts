@@ -134,7 +134,7 @@ export class SubscriberService {
 
   async sendPost(post: Post, site: URL) {
     const postUrl = new URL(post.url, site).toString();
-    const contentHtml = renderPost(post);
+    const contentHtml = renderPost(post, site);
     const subscribers = await this.store.readByTag(post.tag);
     let sentCount = 0;
     const errorsByEmail: Record<string, string> = {};
@@ -178,7 +178,7 @@ export class SubscriberService {
       subscriber,
       post,
       site,
-      renderPost(post),
+      renderPost(post, site),
       new URL(post.url, site).toString(),
     );
   }
