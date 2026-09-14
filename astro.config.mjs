@@ -8,6 +8,9 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   site: "https://bertyl.com",
   adapter: vercel(),
+  markdown: {
+    smartypants: { dashes: "oldschool" },
+  },
   image: {
     layout: "constrained",
   },

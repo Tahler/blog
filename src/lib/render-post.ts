@@ -4,7 +4,19 @@ import sanitizeHtml from "sanitize-html";
 
 import type { Post } from "./posts";
 
-const parser = new MarkdownIt({ html: true }).use(markdownItFootnote);
+const parser = new MarkdownIt({ html: true })
+  .use(markdownItFootnote)
+  .use((markdown) => {
+    markdown.core.ruler.after("inline", "en_dash", (state) => {
+      for (const token of state.tokens) {
+        for (const child of token.children || []) {
+          if (child.type === "text") {
+            child.content = child.content.replaceAll(" -- ", " – ");
+          }
+        }
+      }
+    });
+  });
 const responsiveImageStyle = "display:block;max-width:100%;height:auto";
 const galleryImageStyle =
   "display:block;width:100%;max-width:100%;height:auto;margin-bottom:8px";

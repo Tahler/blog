@@ -13,6 +13,17 @@ const post: Post = {
 };
 
 describe("renderPost", () => {
+  it("renders spaced double hyphens as en dashes in prose", () => {
+    const html = renderPost({
+      ...post,
+      body: "Before -- after, but `code -- code`.",
+    });
+
+    expect(html).toContain("Before – after");
+    expect(html).not.toContain("Before — after");
+    expect(html).toContain("<code>code -- code</code>");
+  });
+
   it("renders galleries as two email-safe columns", () => {
     const html = renderPost({
       ...post,
