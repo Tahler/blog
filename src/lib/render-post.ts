@@ -17,8 +17,7 @@ const footnoteSeparatorStyle =
 const footnoteSectionStyle = "color:#555;font-size:0.875em;line-height:1.5";
 const footnoteListStyle = "list-style:none;margin:0;padding-left:0";
 const footnoteItemStyle = "margin-bottom:8px";
-const footnoteNumberStyle =
-  "color:#555;text-decoration:underline dashed;margin-right:4px";
+const footnoteNumberStyle = "text-decoration:underline;margin-right:4px";
 const footnoteBackrefStyle = "color:#555;text-decoration:none";
 const contentImageUrls = import.meta.glob<string>(
   "../content/**/*.{jpg,jpeg,png,gif,webp}",
@@ -64,7 +63,7 @@ export function renderPost(post: Post, site?: URL) {
         color: [/^#555$/],
         "font-weight": [/^600$/],
         "margin-right": [/^4px$/],
-        "text-decoration": [/^(none|underline dashed)$/],
+        "text-decoration": [/^(none|underline)$/],
       },
       hr: {
         border: [/^0$/],
@@ -125,6 +124,7 @@ function prepareFootnotes(html: string) {
       /<a href="(#fn[^"]*)" id="([^"]*)">/g,
       `<a href="$1" id="$2" style="${footnoteReferenceLinkStyle}">`,
     )
+    .replace(/(id="fnref[^"]*"[^>]*>)\[([^\]]+)\](<\/a>)/g, "$1$2$3")
     .replaceAll(
       '<hr class="footnotes-sep">',
       `<hr style="${footnoteSeparatorStyle}">`,
