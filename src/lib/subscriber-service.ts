@@ -272,16 +272,26 @@ class SubscriberEmailer {
       input.to,
       input.subject,
       `
-        <div style="font-family: sans-serif; line-height: 1.5; color: #111;">
-          ${input.contentHtml}
-          <p style="margin-top: 32px;">
-            <a href="${input.postUrl}">Read on the web</a>
-            &middot;
-            <a href="${input.preferencesUrl}">Manage preferences</a>
-            &middot;
-            <a href="${input.unsubscribeUrl}">Unsubscribe</a>
-          </p>
-        </div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td align="center">
+              <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 600px;">
+                <tr>
+                  <td style="font-family: sans-serif; line-height: 1.5; color: #111;">
+                    ${input.contentHtml}
+                    <p style="margin-top: 32px;">
+                      <a href="${input.postUrl}">Read on the web</a>
+                      &middot;
+                      <a href="${input.preferencesUrl}">Manage preferences</a>
+                      &middot;
+                      <a href="${input.unsubscribeUrl}">Unsubscribe</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
       `,
     );
   }

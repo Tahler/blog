@@ -40,7 +40,7 @@ describe("renderPost", () => {
     );
     expect(html).toContain('<td width="50%" valign="top">');
     expect(html).toContain(
-      '<img src="https://example.com/first.jpg" alt="First" width="100%" style="display:block;width:100%;max-width:100%;height:auto" />',
+      '<img src="https://example.com/first.jpg" alt="First" width="100%" style="display:block;width:100%;max-width:100%;height:auto;margin-bottom:8px" />',
     );
     expect(html).not.toContain('<figure class="gallery"');
   });

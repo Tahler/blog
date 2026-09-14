@@ -5,7 +5,8 @@ import type { Post } from "./posts";
 
 const parser = new MarkdownIt({ html: true });
 const responsiveImageStyle = "display:block;max-width:100%;height:auto";
-const galleryImageStyle = "display:block;width:100%;max-width:100%;height:auto";
+const galleryImageStyle =
+  "display:block;width:100%;max-width:100%;height:auto;margin-bottom:8px";
 const contentImageUrls = import.meta.glob<string>(
   "../content/**/*.{jpg,jpeg,png,gif,webp}",
   { eager: true, import: "default", query: "?url" },
@@ -35,6 +36,7 @@ export function renderPost(post: Post, site?: URL) {
         width: [/^100%$/],
         "max-width": [/^100%$/],
         height: [/^auto$/],
+        "margin-bottom": [/^8px$/],
       },
     },
     allowedTags,

@@ -196,6 +196,9 @@ describe(SubscriberService, () => {
       expect(got.subject).toEqual("A New Post");
       expect(got.html).toContain("<h1>Hello</h1>");
       expect(got.html).toContain(
+        '<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 600px;">',
+      );
+      expect(got.html).toContain(
         `<p>This is a blog post with a <a href="https://example.com">link</a>.</p>`,
       );
       expect(got.html).toContain(
