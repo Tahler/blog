@@ -8,5 +8,8 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   site: "https://bertyl.com",
   adapter: vercel(),
+  image: {
+    layout: "constrained",
+  },
   integrations: [sitemap()],
 });

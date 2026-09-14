@@ -63,6 +63,61 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
       width: 100%;
       border-radius: 0.25rem;
     }
+
+    .gallery {
+      --gallery-gap: clamp(0.35rem, 1vw, 0.75rem);
+
+      position: relative;
+      left: 50%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--gallery-gap);
+      width: min(var(--wrap-wide), calc(100vw - 2rem));
+      margin: 2.5rem 0 3rem;
+      transform: translateX(-50%);
+
+      .column {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: var(--gallery-gap);
+      }
+
+      p {
+        display: grid;
+        gap: var(--gallery-gap);
+        margin: 0;
+      }
+
+      img {
+        display: block;
+        width: 100%;
+        margin: 0;
+        background: linear-gradient(
+          110deg,
+          var(--color-bg-secondary) 30%,
+          var(--color-ui-normal) 45%,
+          var(--color-bg-secondary) 60%
+        );
+        background-size: 200% 100%;
+        animation: gallery-skeleton 1.8s ease-in-out infinite;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        img {
+          animation: none;
+        }
+      }
+    }
+  }
+
+  @keyframes gallery-skeleton {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
   }
 
   footer {
