@@ -56,4 +56,33 @@ describe("renderPost", () => {
     );
     expect(html).not.toContain('width="100%"');
   });
+
+  it("renders footnotes as styled, linked endnotes", () => {
+    const html = renderPost({
+      ...post,
+      body: [
+        "A statement with a footnote.[^detail]",
+        "",
+        "[^detail]: Supporting detail with a [link](https://example.com).",
+      ].join("\n"),
+    });
+
+    expect(html).toContain(
+      '<sup style="font-size:0.75em;line-height:0;vertical-align:super"><a href="#fn-blog-test-1" id="fnref-blog-test-1" style="color:#555;text-decoration:none;font-weight:600">[1]</a></sup>',
+    );
+    expect(html).toContain(
+      '<section aria-label="Footnotes" style="color:#555;font-size:0.875em;line-height:1.5">',
+    );
+    expect(html).toContain(
+      '<ol style="list-style:none;margin:0;padding-left:0">',
+    );
+    expect(html).toContain(
+      '<li id="fn-blog-test-1" style="margin-bottom:8px"><p><a href="#fnref-blog-test-1" aria-label="Back to footnote reference 1" style="color:#555;text-decoration:underline dashed;margin-right:4px">1</a> Supporting detail',
+    );
+    expect(html).toContain(
+      '<a href="#fnref-blog-test-1" aria-label="Back to footnote reference" style="color:#555;text-decoration:none">↩︎</a>',
+    );
+    expect(html).toContain('<a href="https://example.com">link</a>');
+    expect(html).not.toContain("[^detail]");
+  });
 });
