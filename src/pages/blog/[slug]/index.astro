@@ -81,7 +81,6 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
       &:focus-visible {
         text-decoration-color: var(--color-tx-faint);
         text-decoration-line: underline;
-        text-decoration-style: dashed;
         text-decoration-thickness: 1px;
         text-underline-offset: 0.25rem;
       }
@@ -125,6 +124,11 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
           text-decoration-style: dashed;
           text-decoration-thickness: 1px;
           text-underline-offset: 0.25rem;
+        }
+
+        &:hover::before,
+        &:focus-visible::before {
+          text-decoration-style: solid;
         }
 
         ~ [data-footnote-backref]::before {
