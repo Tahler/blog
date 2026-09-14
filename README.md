@@ -37,7 +37,7 @@ Open `http://localhost:4321`.
 
 ## Writing Posts
 
-Add a new `src/content/blog/{YYYY-MM-DD}_{slug}.md` file. It will later resolve to `/blog/{slug}`.
+Add a new `src/content/blog/{YYYY-MM-DD}_{slug}.md` file (or `{YYYY-MM-DD}_{slug}/index.md`). It will later resolve to `/blog/{slug}`.
 
 It must include frontmatter like:
 

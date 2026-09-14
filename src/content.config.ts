@@ -7,7 +7,7 @@ const blog = defineCollection({
     base: "./src/content/blog",
     pattern: "**/*.md",
     generateId: ({ entry }) =>
-      entry.replace(/^\d{4}-\d{2}-\d{2}_/, "").replace(/\.md$/, ""),
+      entry.replace(/(?:\/index)?\.md$/, "").replace(/^\d{4}-\d{2}-\d{2}_/, ""),
   }),
   schema: z.object({
     title: z.string(),
