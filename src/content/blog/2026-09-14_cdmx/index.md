@@ -3,6 +3,8 @@ title: "Mexico City"
 description: "The best of my favorite city."
 date: "2026-09-14"
 tag: "other"
+image: ./social-preview.png
+imageAlt: Olmec head in Parque Hundido, Mexico City
 ---
 
 La Ciudad de México (CDMX) is my favorite city.
