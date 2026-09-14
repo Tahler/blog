@@ -75,11 +75,15 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
       padding: 0 0.1em;
       color: var(--color-action);
       font-weight: 600;
-      text-decoration: none;
+      text-decoration-line: none;
 
       &:hover,
       &:focus-visible {
-        text-decoration: underline dashed;
+        text-decoration-color: var(--color-tx-faint);
+        text-decoration-line: underline;
+        text-decoration-style: dashed;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.25rem;
       }
     }
 
@@ -107,8 +111,7 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
       }
 
       [data-footnote-backref] {
-        color: var(--color-tx-muted);
-        text-decoration: none;
+        text-decoration-line: none;
 
         &::before {
           position: absolute;
@@ -117,7 +120,11 @@ const breadcrumbs = [{ title: "Blog", href: "/blog" }];
           width: 1.25rem;
           content: counter(list-item);
           text-align: right;
-          text-decoration: underline dashed;
+          text-decoration-color: var(--color-tx-faint);
+          text-decoration-line: underline;
+          text-decoration-style: dashed;
+          text-decoration-thickness: 1px;
+          text-underline-offset: 0.25rem;
         }
 
         ~ [data-footnote-backref]::before {
