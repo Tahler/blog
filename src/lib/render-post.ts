@@ -4,6 +4,8 @@ import sanitizeHtml from "sanitize-html";
 import type { Post } from "./posts";
 
 const parser = new MarkdownIt({ html: true });
+const responsiveImageStyle = "display:block;max-width:100%;height:auto";
+const galleryImageStyle = "display:block;width:100%;max-width:100%;height:auto";
 const contentImageUrls = import.meta.glob<string>(
   "../content/**/*.{jpg,jpeg,png,gif,webp}",
   { eager: true, import: "default", query: "?url" },
@@ -17,14 +19,60 @@ export function renderPost(post: Post, site?: URL) {
   ]);
   const allowedAttributes = {
     ...sanitizeHtml.defaults.allowedAttributes,
+    img: [...(sanitizeHtml.defaults.allowedAttributes.img || []), "style"],
     source: ["src", "type"],
+    table: ["border", "cellpadding", "cellspacing", "role", "width"],
+    td: ["valign", "width"],
     video: ["aria-label", "controls", "muted", "playsinline", "preload"],
   };
 
-  return sanitizeHtml(parser.render(prepareBody(post, site)), {
+  const renderedHtml = parser.render(prepareBody(post, site));
+  return sanitizeHtml(prepareGalleries(renderedHtml), {
     allowedAttributes,
+    allowedStyles: {
+      img: {
+        display: [/^block$/],
+        width: [/^100%$/],
+        "max-width": [/^100%$/],
+        height: [/^auto$/],
+      },
+    },
     allowedTags,
+    transformTags: {
+      img: (tagName, attribs) => {
+        const galleryImage = attribs["data-gallery-image"] === "true";
+        delete attribs["data-gallery-image"];
+        return {
+          tagName,
+          attribs: {
+            ...attribs,
+            ...(galleryImage ? { width: "100%" } : {}),
+            style: galleryImage ? galleryImageStyle : responsiveImageStyle,
+          },
+        };
+      },
+    },
   });
+}
+
+function prepareGalleries(html: string) {
+  return html.replace(
+    /<figure class="gallery"[^>]*>\s*<div class="column">([\s\S]*?)<\/div>\s*<div class="column">([\s\S]*?)<\/div>\s*<\/figure>/g,
+    (_gallery, firstColumn, secondColumn) => `
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="8" border="0">
+        <tbody>
+          <tr>
+            <td width="50%" valign="top">${prepareGalleryColumn(firstColumn)}</td>
+            <td width="50%" valign="top">${prepareGalleryColumn(secondColumn)}</td>
+          </tr>
+        </tbody>
+      </table>
+    `,
+  );
+}
+
+function prepareGalleryColumn(html: string) {
+  return html.replaceAll("<img ", '<img data-gallery-image="true" ');
 }
 
 function prepareBody(post: Post, site?: URL) {
