@@ -7,6 +7,7 @@ function toPost(entry: BlogEntry): Post {
     ...entry.data,
     url: `/blog/${entry.id}/`,
     body: entry.body || "",
+    filePath: entry.filePath,
   };
 }
 
@@ -17,6 +18,7 @@ export interface Post {
   date: string; // Date ISO format.
   tag: BlogEntry["data"]["tag"];
   body: string;
+  filePath?: string;
 }
 
 export async function getSortedPosts(): Promise<Post[]> {
