@@ -11,7 +11,7 @@ _Disclaimer: I am not an investment advisor and this is not investment advice. I
 
 ## The problem
 
-![Everybody rents](/assets/everybody-rents.png)
+![Everybody rents](./everybody-rents.png)
 
 You have to "pay rent" even if you lose your job, even when you get in a car crash, even if you have kids, even when you retire.
 
@@ -19,7 +19,7 @@ I want this guide to help you save (in the literal safety sense), spend wisely, 
 
 [^sources]: These aren't new ideas: many personal finance books, channels, and blogs describe the same framework. Books like [The Simple Path to Wealth](https://a.co/d/0ivcUUqW) and [I Will Teach You To Be Rich](https://a.co/d/06TZkn2k), blog posts from [Mr. Money Mustache](https://www.mrmoneymustache.com/) and [from Vanguard](https://corporate.vanguard.com/content/dam/corp/research/pdf/what_to_do_with_your_next_dollar.pdf), or from financial experts like [Warren Buffett](https://www.berkshirehathaway.com/letters/2013ltr.pdf) and [Ben Felix](https://www.youtube.com/channel/UCDXTQ8nWmx_EhZ2v-kp7QxA). But few seem to know about it, let alone follow it.
 
-![Flowing money system](/assets/flowing-money-system.png)
+![Flowing money system](./flowing-money-system.png)
 
 Let's build it piece by piece.
 
@@ -31,7 +31,7 @@ The word _budget_ makes me feel poor, so [copy this _spending plan_](https://doc
 
 Great! Now you know roughly how much you earn and have to spend each month. You can think of your income "flowing" to different buckets, like this:
 
-![Sankey-like](/assets/sankey.png)
+![Sankey-like](./sankey.png)
 
 We'll distribute that surplus later. But first let's talk about spending.
 
@@ -68,7 +68,7 @@ Another tip: each year, consider paying for something that you'll cherish for th
 
 ### Step 2.1: get a credit card
 
-![Pick a card, any card](/assets/pick-a-card-any-card.png)
+![Pick a card, any card](./pick-a-card-any-card.png)
 _Pick a card, any card... Actually don't. Most of them are trash._
 
 You're going to be spending, so you might as well get free rewards.
