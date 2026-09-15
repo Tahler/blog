@@ -3,6 +3,8 @@ title: "Gemini-powered Reddit poster"
 description: "A Gemini-powered Reddit bot which posts to r/NotTooLate daily."
 date: "2025-11-23"
 tag: "projects"
+image: ./social-preview.png
+imageAlt: Screenshot from reddit.com/r/NotTooLate about Frank Sinatra's comeback at 37.
 ---
 
 _I love this idea that it's never too late to reinvent yourself, so I built a Gemini-powered Reddit bot which posts to [r/NotTooLate](https://www.reddit.com/r/NotTooLate/) daily. It's slop but it was fun nonetheless._
