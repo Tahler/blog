@@ -3,6 +3,8 @@ title: "The new grad's guide to personal finance"
 description: "A system for spending, saving, and investing."
 date: "2026-05-12"
 tag: "other"
+image: ./pick-a-card-any-card.png
+imageAlt: A magician offering many credit cards, representing just how many options are out there.
 ---
 
 _I wrote this especially for my sisters who just graduated, but I kept it general enough for anyone in the US!_
