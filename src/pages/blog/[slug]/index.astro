@@ -16,12 +16,20 @@ type Props = CollectionEntry<"blog">;
 const post = Astro.props;
 const { Content } = await render(post);
 
-const { title, description, date, tag } = post.data;
+const { title, description, date, tag, image, imageAlt } = post.data;
 const replyHref = `mailto:tyler@bertyl.com?subject=${encodeURIComponent(`Re: ${title}`)}`;
 const breadcrumbs = [{ title: "Blog", href: "/blog" }];
 ---
 
-<PageLayout title={title} description={description} breadcrumbs={breadcrumbs}>
+<PageLayout
+  title={title}
+  description={description}
+  image={image}
+  imageAlt={image ? (imageAlt ?? title) : "Hey it's Tyler"}
+  ogType="article"
+  publishedTime={date}
+  breadcrumbs={breadcrumbs}
+>
   <main>
     <article>
       <header>

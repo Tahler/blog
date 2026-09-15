@@ -6,6 +6,9 @@ interface Props {
   title: string;
   description?: string;
   image?: ImageMetadata;
+  imageAlt?: string;
+  ogType?: "website" | "article";
+  publishedTime?: string;
   breadcrumbs?: { title: string; href?: string }[];
   frontmatter?: Props;
 }

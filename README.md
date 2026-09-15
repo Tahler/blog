@@ -56,6 +56,16 @@ Where `tag` is one of:
 - `thoughts`
 - `other`
 
+By default, all socially shared links preview `src/layouts/social-preview.png`.
+To set a custom one for a post, place the image beside its Markdown file and add these fields:
+
+```yaml
+image: ./social-preview.png
+imageAlt: Image description
+```
+
+Use a 1200 x 630 PNG or JPEG.
+
 ## Data flows
 
 This app handles subscription, authentication, and notification all via email.
